@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- displays site properly based on user's device -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
+  <link rel="stylesheet" href="./assets/styles.css">
+  <title>Frontend Mentor | Interactive comments section</title>
+  <link rel="stylesheet" href="./assets/fontawesome/css/fontawesome.css">
+  <link rel="stylesheet" href="./assets/fontawesome/css/brands.css">
+  <link rel="stylesheet" href="./assets/fontawesome/css/solid.css">
+  <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
+  <style>
+    .attribution { font-size: 11px; text-align: center; }
+    .attribution a { color: hsl(228, 45%, 44%); }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="comments-container">
+      <div class="comment">
+        <div class="comment-info">
+          <img src="./images/avatars/image-amyrobson.png" alt="Amy Robson avatar" srcset="" class="user-avatar">
+          <a href="#" class="Username">amyrobson</a>
+          <p class="timestamp">1 month ago</p>
+        </div>
+        <div class="comment-content">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam perspiciatis quibusdam molestias velit ea vero culpa eos a molestiae, accusamus asperiores ducimus quas quidem ad? Sapiente eum similique assumenda recusandae.
+        </div>
+        <div class="comment-options">
+          <div class="comment-points">
+            <button class="more-btn"><i class="fa-solid fa-plus"></i></button>
+            <span class="points">12</span>
+            <button class="minus-btn"><i class="fa-solid fa-minus"></i></button>
+          </div>
+          <button class="reply-btn"><i class="fa-solid fa-reply"></i> Reply</button>
+        </div>
+      </div>
+      <div class="comment you">
+        <div class="comment-info">
+          <img src="./images/avatars/image-amyrobson.png" alt="Amy Robson avatar" srcset="" class="user-avatar">
+          <a href="#" class="Username">amyrobson</a>
+          <span class="your-username">you</span>
+          <p class="timestamp">1 month ago</p>
+        </div>
+        <div class="comment-content">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam perspiciatis quibusdam molestias velit ea vero culpa eos a molestiae, accusamus asperiores ducimus quas quidem ad? Sapiente eum similique assumenda recusandae.
+        </div>
+        <div class="comment-options">
+          <div class="comment-points">
+            <button class="more-btn"><i class="fa-solid fa-plus"></i></button>
+            <span class="points">4</span>
+            <button class="minus-btn"><i class="fa-solid fa-minus"></i></button>
+          </div>
+          <div class="your-options">
+          <button class="delete-btn"><i class="fa-solid fa-trash"></i> Delete</button>
+          <button class="edit-btn"><i class="fa-solid fa-pen"></i> Edit</button>
+          </div>
+        </div>
+      </div>
+      <div class="comment reply">
+        <div class="comment-info">
+          <img src="./images/avatars/image-amyrobson.png" alt="Amy Robson avatar" srcset="" class="user-avatar">
+          <a href="#" class="Username">amyrobson</a>
+          <span class="your-username">you</span>
+          <p class="timestamp">1 month ago</p>
+        </div>
+        <div class="comment-content">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam perspiciatis quibusdam molestias velit ea vero culpa eos a molestiae, accusamus asperiores ducimus quas quidem ad? Sapiente eum similique assumenda recusandae.
+        </div>
+        <div class="comment-options">
+          <div class="comment-points">
+            <button class="more-btn"><i class="fa-solid fa-plus"></i></button>
+            <span class="points">4</span>
+            <button class="minus-btn"><i class="fa-solid fa-minus"></i></button>
+          </div>
+          <div class="your-options">
+          <button class="delete-btn"><i class="fa-solid fa-trash"></i> Delete</button>
+          <button class="edit-btn"><i class="fa-solid fa-pen"></i> Edit</button>
+          </div>
+        </div>
+      </div>
+      <div class="comment reply">
+        <div class="comment-info">
+          <img src="./images/avatars/image-amyrobson.png" alt="Amy Robson avatar" srcset="" class="user-avatar">
+          <a href="#" class="Username">amyrobson</a>
+          <span class="your-username">you</span>
+          <p class="timestamp">1 month ago</p>
+        </div>
+        <div class="comment-content">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam perspiciatis quibusdam molestias velit ea vero culpa eos a molestiae, accusamus asperiores ducimus quas quidem ad? Sapiente eum similique assumenda recusandae.
+        </div>
+        <div class="comment-options">
+          <div class="comment-points">
+            <button class="more-btn"><i class="fa-solid fa-plus"></i></button>
+            <span class="points">4</span>
+            <button class="minus-btn"><i class="fa-solid fa-minus"></i></button>
+          </div>
+          <div class="your-options">
+          <button class="delete-btn"><i class="fa-solid fa-trash"></i> Delete</button>
+          <button class="edit-btn"><i class="fa-solid fa-pen"></i> Edit</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="new-comment_container">
+      <textarea name="" id="new-comment" placeholder="Add a comment..."></textarea>
+      <div class="user-options">
+        <img src="./images/avatars/image-juliusomo.png" alt="user-avatar" srcset="" class="user-avatar">
+        <button class="send-btn">send</button>
+      </div>
+    </section>
+  </main>
+  <!-- Pull dynamic content from the data.json file -->
+  
+  <div class="attribution">
+    Challenge by <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">Frontend Mentor</a>. 
+    Coded by <a href="https://www.linkedin.com/in/jenn-acosta7/">Jenn Acosta</a>.
+  </div>
+</body>
+</html>
