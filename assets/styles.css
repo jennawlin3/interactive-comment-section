@@ -43,7 +43,7 @@ body {
     border-radius: 10px;
 }
 
-.reply {
+.reply, .reply-comment_container {
     margin-left: 20px;
     position: relative;
 }
@@ -64,6 +64,10 @@ body {
     top: 0;
     left: -20px;
     height: 110%;
+}
+
+.reply-comment_container::before {
+    height: 115%;
 }
 
 .reply:last-of-type::before {

@@ -1,5 +1,6 @@
 const commentContainer = document.querySelector(".comments-container");
 let commentsArray = [];
+let newCommentId = [];
 
 document.addEventListener("DOMContentLoaded", loadComments());
 
@@ -322,6 +323,7 @@ function loadFunctionality(dataArray, data) {
         btn.addEventListener("click", e => {
             if(e) {
                 addNewComment(index, data);
+                newCommentId.push(index);
             }
         })
     })
@@ -415,13 +417,17 @@ function repliesMinusPoints(dataArray, index) {
 
 function addNewComment(index, data) {
     let c = data.currentUser;
-    let commentContainer = document.querySelectorAll(".comments-container article"); 
+    let commentContainer = document.querySelectorAll(".comments-container article");
 
     let comment = commentContainer[index];
     console.log(comment);
 
+    if(newCommentId.indexOf(index) !== -1) {
+        return
+    } else {
     const newCommentContainer = document.createElement("section");
     newCommentContainer.classList.add("reply-comment_container");
+    newCommentContainer.setAttribute("data-id", index);
     const textareaComment = document.createElement("textarea");
     textareaComment.classList.add("new-comment");
     textareaComment.setAttribute("placeholder", "Add a comment...");
@@ -440,5 +446,7 @@ function addNewComment(index, data) {
     newCommentContainer.appendChild(textareaComment);
     newCommentContainer.appendChild(userOptions);
     console.log(newCommentContainer);
-    comment.after(newCommentContainer);
+    comment.after(newCommentContainer);         
+    }
+       
 }
