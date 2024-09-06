@@ -56,7 +56,7 @@ body {
     padding: 15px 0 0;
 }
 
-.reply::before {
+.reply::before, .reply-comment_container::before {
     content: "";
     position: absolute;
     width: 2px;
@@ -186,14 +186,22 @@ button {
     display: flex;
 }
 
-.new-comment_container {
+.new-comment_container, .reply-comment_container {
     background-color: var(--white);
     border-radius: 10px;
     padding: 15px;
+}
+
+.new-comment_container {
     order: 2;
 }
 
-.new-comment_container textarea {
+.reply-comment_container {
+    margin-top: -15px;
+    margin-bottom: 30px;
+}
+
+.new-comment_container textarea, .reply-comment_container textarea {
     border: 1px solid #ddd;
     width: 100%;
     border-radius: 10px;
@@ -246,7 +254,7 @@ button {
         padding: 10px 0 20px;
     }
 
-    .reply .comment-content_container {
+    .reply .comment-content_container, .reply .comment-info {
         margin-left: 70px;
     }
 
@@ -268,20 +276,28 @@ button {
         right: 20px;
     }
 
-    .reply::before {
+    .reply .comment-options .reply-btn, .reply .comment-options .your-options {
+        top: 20px;
+    }
+
+    .reply-comment_container {
+        margin-left: 20px;
+    }
+
+    .reply::before, .reply-comment_container::before {
         height: 115%;
     }
     
-    .new-comment_container {
+    .new-comment_container, .reply-comment_container {
         position: relative;
     }
 
-    .new-comment_container textarea {
+    .new-comment_container textarea, .reply-comment_container textarea {
         width: 73%;
         margin-left: 60px;
     }
 
-    .new-comment_container .user-avatar {
+    .new-comment_container .user-avatar, .reply-comment_container .user-avatar {
         position: absolute;
         top: 20px;
         left: 25px;

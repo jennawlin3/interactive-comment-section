@@ -14,7 +14,7 @@ async function loadComments() {
     let currentUser = data.currentUser.username;
 
     // CREATE CURRENT USER TEXTAREA
-    const newCommentContainer = document.createElement("new-comment_container");
+    const newCommentContainer = document.createElement("section");
     newCommentContainer.classList.add("new-comment_container");
     const textareaComment = document.createElement("textarea");
     textareaComment.classList.add("new-comment");
@@ -41,7 +41,7 @@ async function loadComments() {
     comments.forEach((c,i) => {
         //console.log(c);
         
-        const comment = document.createElement("div");
+        const comment = document.createElement("article");
         comment.classList.add("comment");
         comment.setAttribute("id", c.id);
         // Comment information
@@ -162,7 +162,7 @@ async function loadComments() {
         if(c.replies.length > 0) {
             c.replies.forEach(r => {
                 
-                const comment = document.createElement("div");
+                const comment = document.createElement("article");
                 comment.classList.add("reply");
                 comment.setAttribute("id", r.id);
                 // Comment information
@@ -287,11 +287,11 @@ async function loadComments() {
              })
             }
         })
-    loadFunctionality(dataArray);
+    loadFunctionality(dataArray, data);
     }
 }
 
-function loadFunctionality(dataArray) {
+function loadFunctionality(dataArray, data) {
     const replyBtns = document.querySelectorAll(".reply-btn");
     const deleteBtns = document.querySelectorAll(".delete-btn");
     const editBtns = document.querySelectorAll(".edit-btn");
@@ -301,8 +301,7 @@ function loadFunctionality(dataArray) {
     moreBtns.forEach((btn, index) => {
         btn.addEventListener("click", e => {
             if(e) {
-                let currentTarget = e.currentTarget;
-                addPoints(dataArray, index, currentTarget);
+                addPoints(dataArray, index);
                 console.log(index);
             }
         }
@@ -312,11 +311,19 @@ function loadFunctionality(dataArray) {
     minusBtns.forEach((btn, index) => {
         btn.addEventListener("click", e => {
             if(e) {
-                let currentTarget = e.currentTarget;
-                removePoints(dataArray, index, currentTarget);
+                removePoints(dataArray, index);
+                console.log(index);
             }
         }
         )
+    })
+
+    replyBtns.forEach((btn, index) => {
+        btn.addEventListener("click", e => {
+            if(e) {
+                addNewComment(index, data);
+            }
+        })
     })
 }
 
@@ -386,6 +393,7 @@ function repliesMinusPoints(dataArray, index) {
     comments.forEach((c, i) => {
         if(c.replies) {
             c.replies.forEach((r,i) => {
+                console.log(r.id === iReply);
                 if(r.id === iReply) {
                     if(r.score === 0) {
                         return;
@@ -403,4 +411,34 @@ function repliesMinusPoints(dataArray, index) {
             })
         }
     })  
+}
+
+function addNewComment(index, data) {
+    let c = data.currentUser;
+    let commentContainer = document.querySelectorAll(".comments-container article"); 
+
+    let comment = commentContainer[index];
+    console.log(comment);
+
+    const newCommentContainer = document.createElement("section");
+    newCommentContainer.classList.add("reply-comment_container");
+    const textareaComment = document.createElement("textarea");
+    textareaComment.classList.add("new-comment");
+    textareaComment.setAttribute("placeholder", "Add a comment...");
+    const userOptions = document.createElement("div");
+    userOptions.classList.add("user-options");
+    const userAvatar = document.createElement("img");
+    userAvatar.setAttribute("src", data.currentUser.image.webp);
+    userAvatar.setAttribute("alt", data.currentUser.username);
+    userAvatar.classList.add("user-avatar");
+    const sendBtn = document.createElement("button");
+    sendBtn.classList.add("send-btn");
+    sendBtn.textContent = "Send";
+    
+    userOptions.appendChild(userAvatar);
+    userOptions.appendChild(sendBtn);
+    newCommentContainer.appendChild(textareaComment);
+    newCommentContainer.appendChild(userOptions);
+    console.log(newCommentContainer);
+    comment.after(newCommentContainer);
 }
