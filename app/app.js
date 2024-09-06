@@ -343,10 +343,15 @@ function removePoints(dataArray, index) {
 
     comments.forEach((c, i) => {
         if(i === index) {
+            if(c.score === 0) {
+                return;
+            } else {
             c.score--;
             console.log(c);
             pointsSpan[index].textContent = c.score;
             return;
+            }
+
         }
         if(c.id !== index) {
             repliesMinusPoints(dataArray, index);
@@ -382,10 +387,18 @@ function repliesMinusPoints(dataArray, index) {
         if(c.replies) {
             c.replies.forEach((r,i) => {
                 if(r.id === iReply) {
+                    if(r.score === 0) {
+                        return;
+                    } else {
                     r.score--;
+                    console.log(r);
+                    pointsSpan[index].textContent = r.score;
+                    return;
+                    }        
+                    /*r.score--;
                     pointsSpan[index].textContent = r.score;
                     console.log(r);
-                    return;
+                    return;*/
                 }
             })
         }
