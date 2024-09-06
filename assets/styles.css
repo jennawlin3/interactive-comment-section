@@ -27,11 +27,16 @@ body {
     min-height: 100vh;
 }
 
+.comments-container {
+    display: flex;
+    flex-direction: column;
+}
+
 .container {
     margin: 30px 20px;
 }
 
-.comment {
+.comment, .reply {
     background-color: var(--white);
     padding: 15px;
     margin-bottom: 20px;
@@ -41,6 +46,14 @@ body {
 .reply {
     margin-left: 20px;
     position: relative;
+}
+
+.reply .comment-info {
+    padding: 0 0 15px;
+}
+
+.reply .comment-options {
+    padding: 15px 0 0;
 }
 
 .reply::before {
@@ -77,6 +90,12 @@ body {
 
 .timestamp {
     color: var(--grayish-blue);
+}
+
+.user-reply_to {
+    text-decoration: none;
+    color: var(--moderate-blue);
+    font-weight: 700;
 }
 
 .comment-content {
@@ -122,10 +141,18 @@ button {
 .reply-btn {
     color: var(--moderate-blue);
     font-weight: 500;
+    flex-direction: row-reverse;
+    display: flex;
 }
 
 .reply-btn:hover, .edit-btn:hover {
     color: var(--light-grayish-blue);
+}
+
+
+.delete-btn, .edit-btn {
+    display: flex;
+    flex-direction: row-reverse;
 }
 
 .reply-btn i, .delete-btn i, .edit-btn i {
@@ -155,10 +182,15 @@ button {
     font-weight: 500;
 }
 
+.your-options {
+    display: flex;
+}
+
 .new-comment_container {
     background-color: var(--white);
     border-radius: 10px;
     padding: 15px;
+    order: 2;
 }
 
 .new-comment_container textarea {
@@ -214,6 +246,10 @@ button {
         padding: 10px 0 20px;
     }
 
+    .reply .comment-content_container {
+        margin-left: 70px;
+    }
+
     .comment-points {
         display: flex;
         flex-direction: column;
@@ -231,6 +267,7 @@ button {
         display: flex;
         right: 20px;
     }
+
     .reply::before {
         height: 115%;
     }
