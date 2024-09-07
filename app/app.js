@@ -481,9 +481,13 @@ function deleteComment(data, id) {
     let comments = data.comments;
     const commentContainer = document.querySelector(".comments-container");
     const comment = document.querySelectorAll(".comments-container article");
+    console.log("hola");
+    console.log(id);
 
-    comments.forEach((d, index) => {
+    comments.forEach((d) => {
+        console.log(d);
         if(d.id === Number(id)) {
+            console.log(id);
             delete d.id;
             delete d.content;
             delete d.createdAt;
@@ -493,16 +497,17 @@ function deleteComment(data, id) {
             
             comment.forEach(c => {
                 if(c.getAttribute("id") === id) {
-                    commentContainer.removeChild(c);
+                commentContainer.removeChild(c);
+                foundDelete = true;
+                console.log(data);
+                return;
                 }
             })
-            foundDelete = true;
-            console.log(data);
-            return;
-        }
+        }    
+       foundDelete = false;
     })
     if(foundDelete === false) {
-        deleteReply(data, id)
+    deleteReply(data, id)
     }
 }
 
@@ -510,7 +515,6 @@ function deleteReply(data, id) {
     let comments = data.comments;
     const commentContainer = document.querySelector(".comments-container");
     const comment = document.querySelectorAll(".comments-container article");
-
 
     comments.forEach((d) => {
          if(d.replies) {
