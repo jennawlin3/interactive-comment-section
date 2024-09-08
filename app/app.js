@@ -314,6 +314,9 @@ function loadFunctionality(dataArray, data) {
     const editBtns = document.querySelectorAll(".edit-btn");
     const moreBtns = document.querySelectorAll(".more-btn");
     const minusBtns = document.querySelectorAll(".minus-btn");
+    const sendBtn = document.querySelectorAll(".send-btn");
+
+    console.log(sendBtn);
 
     moreBtns.forEach((btn) => {
         btn.addEventListener("click", e => {
@@ -353,9 +356,25 @@ function loadFunctionality(dataArray, data) {
                 deleteComment(data, id);
             }
         })
+    });
+
+    editBtns.forEach((btn) => {
+        btn.addEventListener("click", e => {
+            if(e) {
+                let id = btn.getAttribute("data-id");
+                editComment(data, id);                
+            }
+         })
+    });
+
+    sendBtn.forEach((btn) => {
+        btn.addEventListener("click", e => {
+            console.log("hola");
+        })
     })
 }
 
+// ADD POINTS - COMMENTS
 function addPoints(dataArray, id) {
     let comments = dataArray[1][1];
     const pointsSpan = document.querySelectorAll(".points");
@@ -376,6 +395,7 @@ function addPoints(dataArray, id) {
     }
 }
 
+// REMOVE POINTS - COMMENTS
 function removePoints(dataArray, id) {
     let comments = dataArray[1][1];
     const pointsSpan = document.querySelectorAll(".points");
@@ -400,6 +420,7 @@ function removePoints(dataArray, id) {
     }
 }
 
+// ADD MORE POINTS - REPLIES
 function repliesMorePoints(dataArray, id) {
     let comments = dataArray[1][1];
     const pointsSpan = document.querySelectorAll(".points");
@@ -418,6 +439,7 @@ function repliesMorePoints(dataArray, id) {
     })  
 }
 
+// REMOVE POINTS - REPLIES
 function repliesMinusPoints(dataArray, id) {
     let comments = dataArray[1][1];
     const pointsSpan = document.querySelectorAll(".points");
@@ -440,23 +462,27 @@ function repliesMinusPoints(dataArray, id) {
     })  
 }
 
+// ADD TEXTAREA OF NEW COMMENT
 function addNewComment(data, id) {
     let c = data.currentUser;
     let commentContainer = document.querySelectorAll(".comments-container article");
 
     let comment = commentContainer[id-1];
-    console.log(comment);
-    console.log(id);
+    const userRepliyingTo = comment.childNodes[0].childNodes[1].textContent;
+    let userReplyLenght = userRepliyingTo.length;
+    const picUserReplyingTo = comment.childNodes[0].childNodes[0].src;
+
+    count++;
 
     if(newCommentId.indexOf(id) !== -1) {
         return
     } else {
     const newCommentContainer = document.createElement("section");
     newCommentContainer.classList.add("reply-comment_container");
-    newCommentContainer.setAttribute("data-id", id);
+    newCommentContainer.setAttribute("data-id", count);
     const textareaComment = document.createElement("textarea");
     textareaComment.classList.add("new-comment");
-    textareaComment.setAttribute("placeholder", "Add a comment...");
+    textareaComment.textContent = "@" + userRepliyingTo;
     const userOptions = document.createElement("div");
     userOptions.classList.add("user-options");
     const userAvatar = document.createElement("img");
@@ -465,18 +491,44 @@ function addNewComment(data, id) {
     userAvatar.classList.add("user-avatar");
     const sendBtn = document.createElement("button");
     sendBtn.classList.add("send-btn");
+    sendBtn.setAttribute("data-id", count);
     sendBtn.textContent = "Send";
     
     userOptions.appendChild(userAvatar);
     userOptions.appendChild(sendBtn);
     newCommentContainer.appendChild(textareaComment);
     newCommentContainer.appendChild(userOptions);
-    console.log(newCommentContainer);
     comment.after(newCommentContainer);
     newCommentId.push(id);         
     }
+
+    const sendBtn = document.querySelectorAll(".send-btn");
+    console.log(sendBtn);
+    let idBtn = count;
+    const textareas = document.querySelectorAll(".new-comment");
+    let textareaVal;
+    let username = data.currentUser.username;
+    let usernamePic = data.currentUser.image.webp;
+
+    textareas.forEach(t => {
+        t.addEventListener("keydown", e => {
+            textareaVal = e.target.value;
+        })
+    })
+
+    sendBtn.forEach((btn) => {
+        btn.addEventListener("click", e => {
+            if(e) {
+            sendReply(userReplyLenght, idBtn, textareaVal, username, usernamePic, userRepliyingTo, picUserReplyingTo);  
+            }
+        })        
+    })
+
 }
 
+    
+
+// DELETE COMMENT
 function deleteComment(data, id) {
     let comments = data.comments;
     const commentContainer = document.querySelector(".comments-container");
@@ -511,6 +563,7 @@ function deleteComment(data, id) {
     }
 }
 
+// DELETE REPLY
 function deleteReply(data, id) {
     let comments = data.comments;
     const commentContainer = document.querySelector(".comments-container");
@@ -537,5 +590,128 @@ function deleteReply(data, id) {
             })
          }
     })
-    console.log(data);
+}
+
+// EDIT COMMENT
+function editComment(data, id) {
+    
+}
+
+// EDIT REPLY
+
+// SEND COMMENT
+
+// SEND REPLY
+function sendReply(length, id, text, user, usernamePic, userReply) {
+    //let textArray = 
+    console.log(length);
+
+    // Create new comment
+    const comment = document.createElement("article");
+    comment.classList.add("reply");
+    comment.setAttribute("id", id);
+    
+    // Comment information
+    const commentInfo = document.createElement("div");
+    commentInfo.classList.add("comment-info");
+        
+    const userAvatar = document.createElement("img");
+    userAvatar.classList.add("user-avatar");
+    userAvatar.setAttribute("src", usernamePic);
+    userAvatar.setAttribute("alt", user + " avatar");
+                
+    const username = document.createElement("a");
+    username.classList.add("Username");
+    username.textContent = user;
+        
+    /*const timestamp = document.createElement("p");
+    timestamp.classList.add("timestamp");
+    timestamp.textContent = r.createdAt;*/
+
+        const yourUser = document.createElement("span");
+        yourUser.classList.add("your-username");
+        yourUser.textContent = "you";
+        commentInfo.appendChild(userAvatar);
+        commentInfo.appendChild(username);
+        commentInfo.appendChild(yourUser);
+        //commentInfo.appendChild(timestamp);
+                
+    comment.appendChild(commentInfo);
+        
+    // Comment content
+    const commentContentContainer = document.createElement("div");
+    commentContentContainer.classList.add("comment-content_container");
+    const userReplyTo = document.createElement("a");
+    userReplyTo.setAttribute("href", "#")
+    userReplyTo.classList.add("user-reply_to");
+    userReplyTo.textContent = "@" + userReply;
+    const commentContent = document.createElement("span");
+    commentContent.classList.add("comment-content");
+    commentContent.textContent = " " + text;
+    commentContentContainer.appendChild(userReplyTo);
+    commentContentContainer.appendChild(commentContent);
+    comment.appendChild (commentContentContainer);
+        
+    // Comments options 
+    const commentOptions = document.createElement("div");
+    commentOptions.classList.add("comment-options");
+    const commentPoints = document.createElement("div");
+    commentPoints.classList.add("comment-points");
+    //More Btn
+    const moreBtn = document.createElement("button");
+    moreBtn.classList.add("more-btn");
+    moreBtn.setAttribute("data-id", id);
+    const moreIcon = document.createElement("i");
+    moreIcon.classList.add("fa-solid");
+    moreIcon.classList.add("fa-plus");
+    moreBtn.appendChild(moreIcon);
+    // Points
+    const points = document.createElement("span");
+    points.classList.add("points");
+    points.textContent = 0;
+        
+    //Minus Btn
+    const minusBtn = document.createElement("button");
+    minusBtn.classList.add("minus-btn");
+    minusBtn.setAttribute("data-id", id);
+    const minusIcon = document.createElement("i");
+    minusIcon.classList.add("fa-solid");
+    minusIcon.classList.add("fa-minus");
+    minusBtn.appendChild(minusIcon);
+        
+    // Reply button Or User Options
+    const yourOptions = document.createElement("div");
+    yourOptions.classList.add("your-options");
+    //Delete Btn
+    const deleteBtnUser = document.createElement("button");
+    deleteBtnUser.classList.add("delete-btn");
+    deleteBtnUser.setAttribute("data-id", id);
+    const deleteBtnUserIcon = document.createElement("i");
+    deleteBtnUserIcon.classList.add("fa-solid");
+    deleteBtnUserIcon.classList.add("fa-trash");
+    deleteBtnUser.textContent = "Delete";
+    //Edit Btn
+    const editBtn = document.createElement("button");
+    editBtn.classList.add("edit-btn");
+    editBtn.setAttribute("data-id", id);
+    const editBtnIcon = document.createElement("i");
+    editBtnIcon.classList.add("fa-solid");
+    editBtnIcon.classList.add("fa-pen");
+    editBtn.textContent = "Edit";
+                    
+    deleteBtnUser.appendChild(deleteBtnUserIcon);
+    editBtn.appendChild(editBtnIcon);
+    yourOptions.appendChild(deleteBtnUser);
+    yourOptions.appendChild(editBtn);
+
+    commentPoints.appendChild(moreBtn);
+    commentPoints.appendChild(points);
+    commentPoints.appendChild(minusBtn);
+    commentOptions.appendChild(commentPoints);
+    commentOptions.appendChild(yourOptions);
+    comment.appendChild(commentOptions);
+
+    console.log(comment);
+
+                //commentContainer.appendChild(comment);
 }
