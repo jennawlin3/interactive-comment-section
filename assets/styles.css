@@ -271,7 +271,8 @@ button {
         padding: 4px 5px;
         position: absolute;
         left: 20px;
-        top: 30px;
+        top: 50%;
+        transform: translateY(-50%);
     }
 
     .reply-btn, .your-options {

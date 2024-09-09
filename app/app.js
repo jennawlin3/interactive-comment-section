@@ -4,6 +4,10 @@ let newCommentId = [];
 let found = false;
 let foundDelete = false;
 let count = 0;
+let comment = [];
+let likes = [];
+let dislikes = [];
+let jsonArray = [];
 
 document.addEventListener("DOMContentLoaded", loadComments());
 
@@ -14,6 +18,8 @@ async function loadComments() {
 
     function createApp(data) {
     let dataArray = Object.entries(data);
+
+    //console.log(dataArray);
 
     let currentUser = data.currentUser.username;
 
@@ -43,7 +49,11 @@ async function loadComments() {
     let comments = dataArray[1][1];
     comments.forEach((c,i) => {
         //console.log(c);
-        
+        // COMMENT DIV
+        const commentCont = document.createElement("div");
+        commentCont.classList.add("comment-cont");
+        commentCont.setAttribute("data-id", c.id);
+
         const comment = document.createElement("article");
         comment.classList.add("comment");
         comment.setAttribute("id", c.id);
@@ -102,6 +112,7 @@ async function loadComments() {
         const points = document.createElement("span");
         points.classList.add("points");
         points.textContent = c.score;
+        points.setAttribute("data-id", c.id);
 
         //Minus Btn
         const minusBtn = document.createElement("button");
@@ -161,14 +172,27 @@ async function loadComments() {
                     commentOptions.appendChild(replyBtn);
                     comment.appendChild(commentOptions);
                 }
-
-        commentContainer.appendChild(comment);
+        commentCont.appendChild(comment)
+        commentContainer.appendChild(commentCont);
 
         count = c.id;
         
         if(c.replies.length > 0) {
+            let commentID = c.id;
+            const commentDiv = document.querySelectorAll(".comment-cont");
+            //console.log(commentDiv);
+            let commentWithReplies;
+
+            commentDiv.forEach(div => {
+                if(div.getAttribute("data-id") === String(commentID)) {
+                    commentWithReplies = div;
+                }
+            })
+             //console.log(commentWithReplies);
             c.replies.forEach(r => {
                 let countReply = r.id;
+
+                //console.log(commentWithReplies);
 
                 const comment = document.createElement("article");
                 comment.classList.add("reply");
@@ -236,6 +260,7 @@ async function loadComments() {
                 const points = document.createElement("span");
                 points.classList.add("points");
                 points.textContent = r.score;
+                points.setAttribute("data-id", r.id);
         
                 //Minus Btn
                 const minusBtn = document.createElement("button");
@@ -295,8 +320,8 @@ async function loadComments() {
                     commentOptions.appendChild(replyBtn);
                     comment.appendChild(commentOptions);
                 }
-
-                commentContainer.appendChild(comment);
+                
+                commentWithReplies.appendChild(comment);
                 
                 if(countReply > count) {
                     count = countReply;
@@ -304,6 +329,7 @@ async function loadComments() {
              })
             }
         })
+        jsonArray = dataArray;
     loadFunctionality(dataArray, data);
     }
 }
@@ -312,29 +338,58 @@ function loadFunctionality(dataArray, data) {
     const replyBtns = document.querySelectorAll(".reply-btn");
     const deleteBtns = document.querySelectorAll(".delete-btn");
     const editBtns = document.querySelectorAll(".edit-btn");
-    const moreBtns = document.querySelectorAll(".more-btn");
-    const minusBtns = document.querySelectorAll(".minus-btn");
     const sendBtn = document.querySelectorAll(".send-btn");
 
-    console.log(sendBtn);
+    //Comments
+    const moreBtns = document.querySelectorAll(".comment .comment-options .comment-points .more-btn");
+    const minusBtns = document.querySelectorAll(".comment .comment-options .comment-points .minus-btn");
+    //Replies
+    const moreReplyBtns = document.querySelectorAll(".reply .comment-options .comment-points .more-btn");
+    const minusReplyBtns = document.querySelectorAll(".reply .comment-options .comment-points .minus-btn");
+    //Delete
+    const deleteReplyBtns = document.querySelectorAll(".reply .comment-options .your-options .delete-btn");
 
     moreBtns.forEach((btn) => {
         btn.addEventListener("click", e => {
-            if(e) {
-                let id = btn.getAttribute("data-id");
-                console.log(id);
+            e.stopPropagation();
+            if(e.currentTarget) {
+                let id = e.currentTarget.getAttribute("data-id");
+                //console.log(id);
                 addPoints(dataArray, id);
-                console.log(count);
+            }
+        }
+        )
+    });
+
+    moreReplyBtns.forEach((btn) => {
+        btn.addEventListener("click", e => {
+            e.stopPropagation();
+            if(e.currentTarget) {
+                let id = e.currentTarget.getAttribute("data-id");
+                //console.log(id);
+                repliesMorePoints(dataArray, id);
             }
         }
         )
     });
 
     minusBtns.forEach((btn) => {
-        let id = btn.getAttribute("data-id");
         btn.addEventListener("click", e => {
             if(e) {
+                let id = e.currentTarget.getAttribute("data-id");
                 removePoints(dataArray, id);
+                console.log(id);
+            }
+        }
+        )
+    });
+
+    minusReplyBtns.forEach((btn) => {
+        btn.addEventListener("click", e => {
+            if(e) {
+                let id = e.currentTarget.getAttribute("data-id");
+                repliesMinusPoints(dataArray, id);
+                console.log(id);
             }
         }
         )
@@ -344,6 +399,7 @@ function loadFunctionality(dataArray, data) {
         btn.addEventListener("click", e => {
             if(e) {
                 let id = btn.getAttribute("data-id");
+                //console.log(id);
                 addNewComment(data, id);
             }
         })
@@ -354,6 +410,17 @@ function loadFunctionality(dataArray, data) {
             if(e) {
                 let id = btn.getAttribute("data-id");
                 deleteComment(data, id);
+                //console.log("hola");
+            }
+        })
+    });
+
+    deleteReplyBtns.forEach((btn) => {
+        btn.addEventListener("click", e => {
+            if(e) {
+                let id = btn.getAttribute("data-id");
+                deleteReply(data, id);
+                //console.log("hola");
             }
         })
     });
@@ -369,108 +436,186 @@ function loadFunctionality(dataArray, data) {
 
     sendBtn.forEach((btn) => {
         btn.addEventListener("click", e => {
-            console.log("hola");
+            //console.log("hola");
         })
-    })
+    });
 }
 
 // ADD POINTS - COMMENTS
 function addPoints(dataArray, id) {
     let comments = dataArray[1][1];
     const pointsSpan = document.querySelectorAll(".points");
-
-    comments.forEach((c, i) => {
-        if(c.id === Number(id)) {
-            c.score++;
-            pointsSpan[id-1].textContent = c.score;
-            found = true;
-            console.log(c);
-            return;           
-        } else {
-            found = false;
+    let pointSpan;    
+    let number;
+    if (likes.indexOf(id) !== -1) {
+        return;
+    }    
+    if (dislikes.indexOf(id) !== -1) {
+        dislikes = dislikes.filter(item => item !== id)
+    }
+    
+    console.log(dislikes, likes);
+    
+    pointsSpan.forEach(p => {
+        if(p.getAttribute("data-id") === id) {
+            pointSpan = p;
+            number = Number(pointSpan.textContent);
         }
     })
-    if(found === false) {
-        repliesMorePoints(dataArray, id)
+
+    if(number === 0) {
+        return
     }
+    number++;
+    pointSpan.textContent = number;
+    
+    comments.forEach((c, i) => {
+        if(c.id === Number(id)) {
+            pointSpan.textContent = number;
+            likes.push(id);
+            return;           
+        }
+    })
 }
 
 // REMOVE POINTS - COMMENTS
 function removePoints(dataArray, id) {
     let comments = dataArray[1][1];
-    const pointsSpan = document.querySelectorAll(".points");
-    //console.log(id);
-    comments.forEach((c, i) => {
-        if(c.id === Number(id)) {
-            if(c.score === 0) {
-                return;
-            } else {
-            c.score--;
-            pointsSpan[id-1].textContent = c.score;
-            found = true;
-            console.log(c);
-            return;    
-                }
-            } else {
-            found = false;
+    const pointsSpan = document.querySelectorAll(".points");    
+    let pointSpan;
+    let number;
+    
+    if (likes.indexOf(id) !== -1) {
+        likes = likes.filter(item => item !== id)
+    } 
+    if (dislikes.indexOf(id) !== -1) {
+        return;
+    }
+    
+    console.log(dislikes, likes);
+
+    pointsSpan.forEach(p => {
+        if(p.getAttribute("data-id") === id) {
+            pointSpan = p;
+            number = Number(pointSpan.textContent);
         }
     })
-    if(found === false) {
-        repliesMinusPoints(dataArray, id)
+
+    if(number === 0) {
+        return
     }
+    number--;
+    pointSpan.textContent = number;
+    dislikes.push(id);
+
+    comments.forEach((c, i) => {
+        if(c.id === Number(id)) {
+            pointSpan.textContent = number; 
+            return;    
+            }
+    })
 }
 
 // ADD MORE POINTS - REPLIES
 function repliesMorePoints(dataArray, id) {
+    console.log(id);
     let comments = dataArray[1][1];
-    const pointsSpan = document.querySelectorAll(".points");
+    const pointsSpan = document.querySelectorAll(".points");    
+    let pointSpan;
+    let number;
+    if (likes.indexOf(id) !== -1) {
+        return;
+    }    
+    if (dislikes.indexOf(id) !== -1) {
+        dislikes = dislikes.filter(item => item !== id)
+    }
+    
+    pointsSpan.forEach(p => {
+        if(p.getAttribute("data-id") === id) {
+            pointSpan = p;
+            number = Number(pointSpan.textContent);
+            console.log(p);
+        }
+    });
+
+    number++;
+    pointSpan.textContent = number;
 
     comments.forEach((c, i) => {
         if(c.replies) {
             c.replies.forEach((r,i) => {
                 if(r.id === Number(id)) {
-                    r.score++;
-                    pointsSpan[id-1].textContent = r.score;
+                    r.score = number;
                     console.log(r);
+                    likes.push(id);
                     return;
                 }
-            })
+            });
         }
-    })  
+    });
 }
 
 // REMOVE POINTS - REPLIES
 function repliesMinusPoints(dataArray, id) {
+    if (likes.indexOf(id) !== -1) {
+        likes = likes.filter(item => item !== id)
+    } 
+    if (dislikes.indexOf(id) !== -1) {
+        return;
+    }
+
     let comments = dataArray[1][1];
-    const pointsSpan = document.querySelectorAll(".points");
+    const pointsSpan = document.querySelectorAll(".points");    
+    let pointSpan;
+    let number;
+
+    pointsSpan.forEach(p => {
+        if(p.getAttribute("data-id") === id) {
+            pointSpan = p;
+            number = Number(pointSpan.textContent);
+            console.log(p, number);
+        }
+    })
+
+
+    if(number === 0) {
+        return
+    }
+    number--;
+    pointSpan.textContent = number;
+    dislikes.push(id);
 
     comments.forEach((c, i) => {
         if(c.replies) {
             c.replies.forEach((r,i) => {
+''
                 if(r.id === Number(id)) {
-                    if(r.score === 0) {
-                        return;
-                    } else {
-                    r.score--;
-                    pointsSpan[id-1].textContent = r.score;              
-                    //console.log(r);
+                    pointSpan.textContent = number;
+                    r.score = number;              
+                    console.log(r);
                     return; 
-                    }
+                    //}
                 }
             })
         }
-    })  
+    });
 }
 
 // ADD TEXTAREA OF NEW COMMENT
 function addNewComment(data, id) {
-    let c = data.currentUser;
     let commentContainer = document.querySelectorAll(".comments-container article");
+    let idComment;
+    let comment;
 
-    let comment = commentContainer[id-1];
+    commentContainer.forEach(c => {
+        if(c.getAttribute("id") === id) {
+            idComment = c.getAttribute("id");
+            comment = c;
+        }
+    })
+
     const userRepliyingTo = comment.childNodes[0].childNodes[1].textContent;
     let userReplyLenght = userRepliyingTo.length;
-    const picUserReplyingTo = comment.childNodes[0].childNodes[0].src;
 
     count++;
 
@@ -501,25 +646,25 @@ function addNewComment(data, id) {
     comment.after(newCommentContainer);
     newCommentId.push(id);         
     }
-
     const sendBtn = document.querySelectorAll(".send-btn");
-    console.log(sendBtn);
-    let idBtn = count;
+    let idCount = count;
     const textareas = document.querySelectorAll(".new-comment");
     let textareaVal;
     let username = data.currentUser.username;
     let usernamePic = data.currentUser.image.webp;
 
     textareas.forEach(t => {
-        t.addEventListener("keydown", e => {
+        t.addEventListener("keyup", e => {
             textareaVal = e.target.value;
+            //console.log(textareaVal);
         })
     })
 
     sendBtn.forEach((btn) => {
         btn.addEventListener("click", e => {
-            if(e) {
-            sendReply(userReplyLenght, idBtn, textareaVal, username, usernamePic, userRepliyingTo, picUserReplyingTo);  
+            e.stopPropagation();
+            if(e) {  
+            sendReply(userReplyLenght, idCount, textareaVal, username, usernamePic, userRepliyingTo, idComment, data);
             }
         })        
     })
@@ -530,47 +675,41 @@ function addNewComment(data, id) {
 
 // DELETE COMMENT
 function deleteComment(data, id) {
-    let comments = data.comments;
-    const commentContainer = document.querySelector(".comments-container");
-    const comment = document.querySelectorAll(".comments-container article");
     console.log("hola");
-    console.log(id);
+    let comments = data.comments;
+    const commentsContainer = document.querySelector(".comments-container");
+    const commentContainer = document.querySelectorAll(".comment-cont");
 
     comments.forEach((d) => {
-        console.log(d);
+        //console.log(d);
         if(d.id === Number(id)) {
-            console.log(id);
+            //console.log(id);
             delete d.id;
             delete d.content;
             delete d.createdAt;
             delete d.score;
             delete d.user;
-            delete d.replies;        
+            delete d.replies;
             
-            comment.forEach(c => {
-                if(c.getAttribute("id") === id) {
-                commentContainer.removeChild(c);
-                foundDelete = true;
-                console.log(data);
+            commentContainer.forEach(commentCont => {
+                if(commentCont.getAttribute("data-id") === id) {
+                console.log(commentCont);
+                commentsContainer.removeChild(commentCont);
                 return;
                 }
             })
-        }    
-       foundDelete = false;
+        }       
     })
-    if(foundDelete === false) {
-    deleteReply(data, id)
-    }
 }
 
 // DELETE REPLY
 function deleteReply(data, id) {
     let comments = data.comments;
-    const commentContainer = document.querySelector(".comments-container");
-    const comment = document.querySelectorAll(".comments-container article");
+    const commentContainer = document.querySelectorAll(".comment-cont");
+    let replyId = id;
 
     comments.forEach((d) => {
-         if(d.replies) {
+        if(d.replies) {
             d.replies.forEach((r) => {
             if(r.id === Number(id)) {
                 delete r.id;
@@ -579,16 +718,27 @@ function deleteReply(data, id) {
                 delete r.score;
                 delete r.user;
                 delete r.replies;
-                delete r.replyingTo;        
-                
-                comment.forEach(c => {
-                    if(c.getAttribute("id") === id) {
-                        commentContainer.removeChild(c);
+                delete r.replyingTo;    
+            
+            console.log(r);
+            commentContainer.forEach(commentCont => {
+                if(commentCont.childNodes.length > 1) {
+                    let replies = commentCont.childNodes;
+                    replyId = commentCont.getAttribute("data-id");
+
+                    replies.forEach(r => {
+                        //console.log(typeof r.getAttribute("id"));
+                        //console.log(typeof id);
+                        if(r.getAttribute("id") === id) {
+                            //console.log(r);
+                            commentCont.removeChild(r);
+                                }
+                            })
                         }
                     })
-                }
+                }       
             })
-         }
+        }
     })
 }
 
@@ -602,14 +752,32 @@ function editComment(data, id) {
 // SEND COMMENT
 
 // SEND REPLY
-function sendReply(length, id, text, user, usernamePic, userReply) {
-    //let textArray = 
-    console.log(length);
+function sendReply(length, idCount, textTextarea, user, usernamePic, userReply, idComment,data) {
+    if(textTextarea === undefined) {
+        return;
+    }
+
+    let dataArray = Object.entries(data);
+    const commentsContainer = document.querySelectorAll(".comment-cont");
+    const replyTextarea = document.querySelector(".reply-comment_container");
+
+    let text = textTextarea.substring(length+1, textTextarea.length+1);
+    let commentDivCont;
+
+    commentsContainer.forEach(c => {
+        let ct = c.childNodes;
+        ct.forEach(cc => {
+            if(cc.classList.contains("reply-comment_container")){
+              commentDivCont = c.getAttribute("data-id"); 
+              //console.log(typeof commentDivCont); 
+            }
+        })
+    })
 
     // Create new comment
     const comment = document.createElement("article");
     comment.classList.add("reply");
-    comment.setAttribute("id", id);
+    comment.setAttribute("id", idCount);
     
     // Comment information
     const commentInfo = document.createElement("div");
@@ -624,9 +792,9 @@ function sendReply(length, id, text, user, usernamePic, userReply) {
     username.classList.add("Username");
     username.textContent = user;
         
-    /*const timestamp = document.createElement("p");
+    const timestamp = document.createElement("p");
     timestamp.classList.add("timestamp");
-    timestamp.textContent = r.createdAt;*/
+    timestamp.textContent = "now";
 
         const yourUser = document.createElement("span");
         yourUser.classList.add("your-username");
@@ -634,7 +802,7 @@ function sendReply(length, id, text, user, usernamePic, userReply) {
         commentInfo.appendChild(userAvatar);
         commentInfo.appendChild(username);
         commentInfo.appendChild(yourUser);
-        //commentInfo.appendChild(timestamp);
+        commentInfo.appendChild(timestamp);
                 
     comment.appendChild(commentInfo);
         
@@ -660,7 +828,7 @@ function sendReply(length, id, text, user, usernamePic, userReply) {
     //More Btn
     const moreBtn = document.createElement("button");
     moreBtn.classList.add("more-btn");
-    moreBtn.setAttribute("data-id", id);
+    moreBtn.setAttribute("data-id", idCount);
     const moreIcon = document.createElement("i");
     moreIcon.classList.add("fa-solid");
     moreIcon.classList.add("fa-plus");
@@ -669,11 +837,12 @@ function sendReply(length, id, text, user, usernamePic, userReply) {
     const points = document.createElement("span");
     points.classList.add("points");
     points.textContent = 0;
+    points.setAttribute("data-id", count);
         
     //Minus Btn
     const minusBtn = document.createElement("button");
     minusBtn.classList.add("minus-btn");
-    minusBtn.setAttribute("data-id", id);
+    minusBtn.setAttribute("data-id", count);
     const minusIcon = document.createElement("i");
     minusIcon.classList.add("fa-solid");
     minusIcon.classList.add("fa-minus");
@@ -685,7 +854,7 @@ function sendReply(length, id, text, user, usernamePic, userReply) {
     //Delete Btn
     const deleteBtnUser = document.createElement("button");
     deleteBtnUser.classList.add("delete-btn");
-    deleteBtnUser.setAttribute("data-id", id);
+    deleteBtnUser.setAttribute("data-id", count);
     const deleteBtnUserIcon = document.createElement("i");
     deleteBtnUserIcon.classList.add("fa-solid");
     deleteBtnUserIcon.classList.add("fa-trash");
@@ -693,7 +862,7 @@ function sendReply(length, id, text, user, usernamePic, userReply) {
     //Edit Btn
     const editBtn = document.createElement("button");
     editBtn.classList.add("edit-btn");
-    editBtn.setAttribute("data-id", id);
+    editBtn.setAttribute("data-id", count);
     const editBtnIcon = document.createElement("i");
     editBtnIcon.classList.add("fa-solid");
     editBtnIcon.classList.add("fa-pen");
@@ -710,8 +879,82 @@ function sendReply(length, id, text, user, usernamePic, userReply) {
     commentOptions.appendChild(commentPoints);
     commentOptions.appendChild(yourOptions);
     comment.appendChild(commentOptions);
+    commentsContainer[Number(commentDivCont-1)].appendChild(comment);
 
-    console.log(comment);
+    //console.log(commentsContainer[Number(commentDivCont-1)]);
+    //console.log(commentDivCont);
+    //console.log(replyTextarea);
+    commentsContainer[Number(commentDivCont-1)].removeChild(replyTextarea);
 
-                //commentContainer.appendChild(comment);
+    newCommentId = newCommentId.filter(item => item !== String(idComment));
+
+    const objJSON = {
+        content: text,
+        createdAt: timestamp.textContent,
+        id: count,
+        replyingTo: userReply,
+        score: 0,
+        user: {
+            image: {
+            webp: usernamePic,
+            },
+            username: username,
+        }
+    }
+
+    dataArray[1][1][Number(commentDivCont-1)].replies.push(objJSON);
+    console.log(data);
+
+    loadFunctionality(dataArray, data);
+    
+    const deleteBtns = document.querySelectorAll(".delete-btn");
+    const editBtns = document.querySelectorAll(".edit-btn");
+    const moreBtns = document.querySelectorAll(".more-btn");
+    const minusBtns = document.querySelectorAll(".minus-btn");
+    const sendBtn = document.querySelectorAll(".send-btn");
+
+    /*moreBtns.forEach((btn) => {
+        btn.addEventListener("click", e => {
+            e.stopPropagation();
+            if(e.currentTarget) {
+                let id = e.currentTarget.getAttribute("data-id");
+                console.log(id);
+                repliesMorePoints(dataArray, id)
+                
+            }
+        }
+        )
+    });
+
+    minusBtns.forEach((btn) => {
+        btn.addEventListener("click", e => {
+        let id = btn.getAttribute("data-id");
+            if(e) {
+                let id = e.currentTarget.getAttribute("data-id");
+                repliesMinusPoints(dataArray, id);
+                console.log(id);
+            }
+        }
+        )
+    });
+
+    deleteBtns.forEach((btn) => {
+        btn.addEventListener("click", e => {
+            if(e) {
+                let id = btn.getAttribute("data-id");
+                deleteReply(data, id);
+                console.log("hola");
+                console.log(id);
+            }
+        })
+    });
+
+    editBtns.forEach((btn) => {
+        btn.addEventListener("click", e => {
+            if(e) {
+                let id = btn.getAttribute("data-id");
+                editComment(data, id);                
+            }
+         })
+    });*/
 }
