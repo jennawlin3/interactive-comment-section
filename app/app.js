@@ -328,7 +328,13 @@ async function loadComments() {
                 }
              })
             }
-        })
+        });
+        const newComment = document.querySelector(".new-comment_container");
+        console.log(newComment);
+        count++;
+        newComment.setAttribute("data-id", count);
+        count++;
+
         jsonArray = dataArray;
     loadFunctionality(dataArray, data);
     }
@@ -339,6 +345,7 @@ function loadFunctionality(dataArray, data) {
     const deleteBtns = document.querySelectorAll(".delete-btn");
     const editBtns = document.querySelectorAll(".edit-btn");
     const sendBtn = document.querySelectorAll(".send-btn");
+    const newCommentContainer = document.querySelector(".new-comment_container");
 
     //Comments
     const moreBtns = document.querySelectorAll(".comment .comment-options .comment-points .more-btn");
@@ -348,6 +355,11 @@ function loadFunctionality(dataArray, data) {
     const minusReplyBtns = document.querySelectorAll(".reply .comment-options .comment-points .minus-btn");
     //Delete
     const deleteReplyBtns = document.querySelectorAll(".reply .comment-options .your-options .delete-btn");
+    let commentText;
+
+    console.log(moreReplyBtns);
+
+    console.log(minusReplyBtns);
 
     moreBtns.forEach((btn) => {
         btn.addEventListener("click", e => {
@@ -417,10 +429,14 @@ function loadFunctionality(dataArray, data) {
 
     deleteReplyBtns.forEach((btn) => {
         btn.addEventListener("click", e => {
-            if(e) {
+            if(e) {;
+                let response = confirm("Are you sure that you want to delete this comment?");
+                if(response === true) {
                 let id = btn.getAttribute("data-id");
                 deleteReply(data, id);
-                //console.log("hola");
+                //console.log("hola");                
+                }
+
             }
         })
     });
@@ -434,9 +450,14 @@ function loadFunctionality(dataArray, data) {
          })
     });
 
+    newCommentContainer.addEventListener("keyup", e => {
+            commentText = e.target.value;
+            console.log(commentText);
+    })
+
     sendBtn.forEach((btn) => {
         btn.addEventListener("click", e => {
-            //console.log("hola");
+            sendComment(dataArray, commentText, data);
         })
     });
 }
@@ -669,9 +690,7 @@ function addNewComment(data, id) {
         })        
     })
 
-}
-
-    
+}  
 
 // DELETE COMMENT
 function deleteComment(data, id) {
@@ -750,6 +769,147 @@ function editComment(data, id) {
 // EDIT REPLY
 
 // SEND COMMENT
+function sendComment(dataArray, commentText, data) {
+    if(commentText === undefined) {
+        return;
+    }
+
+    let currentUser = dataArray[0][1];
+    
+    const commentContainer = document.querySelector(".new-comment_container");
+    const commentSection = document.querySelector(".comments-container");
+
+    let text = commentText;
+    let commentDivCont = commentContainer.getAttribute("data-id");
+
+    // Create new comment
+    const comment = document.createElement("article");
+    comment.classList.add("comment");
+    comment.setAttribute("id", commentDivCont);
+    count++;
+    
+    // Comment information
+    const commentInfo = document.createElement("div");
+    commentInfo.classList.add("comment-info");
+        
+    const userAvatar = document.createElement("img");
+    userAvatar.classList.add("user-avatar");
+    userAvatar.setAttribute("src", currentUser.image.webp);
+    userAvatar.setAttribute("alt", currentUser.username + " avatar");
+                
+    const username = document.createElement("a");
+    username.classList.add("Username");
+    username.textContent = currentUser.username;
+        
+    const timestamp = document.createElement("p");
+    timestamp.classList.add("timestamp");
+    timestamp.textContent = "now";
+
+        const yourUser = document.createElement("span");
+        yourUser.classList.add("your-username");
+        yourUser.textContent = "you";
+        commentInfo.appendChild(userAvatar);
+        commentInfo.appendChild(username);
+        commentInfo.appendChild(yourUser);
+        commentInfo.appendChild(timestamp);
+                
+    comment.appendChild(commentInfo);
+        
+    // Comment content
+    const commentContentContainer = document.createElement("div");
+    commentContentContainer.classList.add("comment-content_container");
+    const commentContent = document.createElement("span");
+    commentContent.classList.add("comment-content");
+    commentContent.textContent = " " + text;
+    commentContentContainer.appendChild(commentContent);
+    comment.appendChild (commentContentContainer);
+        
+    // Comments options 
+    const commentOptions = document.createElement("div");
+    commentOptions.classList.add("comment-options");
+    const commentPoints = document.createElement("div");
+    commentPoints.classList.add("comment-points");
+    //More Btn
+    const moreBtn = document.createElement("button");
+    moreBtn.classList.add("more-btn");
+    moreBtn.setAttribute("data-id", commentDivCont);
+    const moreIcon = document.createElement("i");
+    moreIcon.classList.add("fa-solid");
+    moreIcon.classList.add("fa-plus");
+    moreBtn.appendChild(moreIcon);
+    // Points
+    const points = document.createElement("span");
+    points.classList.add("points");
+    points.textContent = 0;
+    points.setAttribute("data-id", commentDivCont);
+        
+    //Minus Btn
+    const minusBtn = document.createElement("button");
+    minusBtn.classList.add("minus-btn");
+    minusBtn.setAttribute("data-id", commentDivCont);
+    const minusIcon = document.createElement("i");
+    minusIcon.classList.add("fa-solid");
+    minusIcon.classList.add("fa-minus");
+    minusBtn.appendChild(minusIcon);
+        
+    // Reply button Or User Options
+    const yourOptions = document.createElement("div");
+    yourOptions.classList.add("your-options");
+    //Delete Btn
+    const deleteBtnUser = document.createElement("button");
+    deleteBtnUser.classList.add("delete-btn");
+    deleteBtnUser.setAttribute("data-id", commentDivCont);
+    const deleteBtnUserIcon = document.createElement("i");
+    deleteBtnUserIcon.classList.add("fa-solid");
+    deleteBtnUserIcon.classList.add("fa-trash");
+    deleteBtnUser.textContent = "Delete";
+    //Edit Btn
+    const editBtn = document.createElement("button");
+    editBtn.classList.add("edit-btn");
+    editBtn.setAttribute("data-id", count);
+    const editBtnIcon = document.createElement("i");
+    editBtnIcon.classList.add("fa-solid");
+    editBtnIcon.classList.add("fa-pen");
+    editBtn.textContent = "Edit";
+    editBtn.setAttribute("data-id", commentDivCont);
+                    
+    deleteBtnUser.appendChild(deleteBtnUserIcon);
+    editBtn.appendChild(editBtnIcon);
+    yourOptions.appendChild(deleteBtnUser);
+    yourOptions.appendChild(editBtn);
+
+    commentPoints.appendChild(moreBtn);
+    commentPoints.appendChild(points);
+    commentPoints.appendChild(minusBtn);
+    commentOptions.appendChild(commentPoints);
+    commentOptions.appendChild(yourOptions);
+    comment.appendChild(commentOptions);
+    commentSection.appendChild(comment);
+
+
+    const objJSON = {
+        content: text,
+        createdAt: timestamp.textContent,
+        id: commentDivCont,
+        score: 0,
+        user: {
+            image: {
+            webp: currentUser.image.webp,
+            png: currentUser.image.png
+            },
+            username: currentUser.username,
+        }
+    }
+
+    console.log(dataArray[1][1]);
+    const textareaComment = document.querySelector(".new-comment");
+    textareaComment.value = "";
+    console.log(textareaComment);
+    //dataArray[1][1][Number(commentDivCont-1)].replies.push(objJSON);
+    console.log(dataArray);
+
+    
+}
 
 // SEND REPLY
 function sendReply(length, idCount, textTextarea, user, usernamePic, userReply, idComment,data) {
@@ -881,9 +1041,6 @@ function sendReply(length, idCount, textTextarea, user, usernamePic, userReply, 
     comment.appendChild(commentOptions);
     commentsContainer[Number(commentDivCont-1)].appendChild(comment);
 
-    //console.log(commentsContainer[Number(commentDivCont-1)]);
-    //console.log(commentDivCont);
-    //console.log(replyTextarea);
     commentsContainer[Number(commentDivCont-1)].removeChild(replyTextarea);
 
     newCommentId = newCommentId.filter(item => item !== String(idComment));
@@ -903,58 +1060,7 @@ function sendReply(length, idCount, textTextarea, user, usernamePic, userReply, 
     }
 
     dataArray[1][1][Number(commentDivCont-1)].replies.push(objJSON);
-    console.log(data);
+
 
     loadFunctionality(dataArray, data);
-    
-    const deleteBtns = document.querySelectorAll(".delete-btn");
-    const editBtns = document.querySelectorAll(".edit-btn");
-    const moreBtns = document.querySelectorAll(".more-btn");
-    const minusBtns = document.querySelectorAll(".minus-btn");
-    const sendBtn = document.querySelectorAll(".send-btn");
-
-    /*moreBtns.forEach((btn) => {
-        btn.addEventListener("click", e => {
-            e.stopPropagation();
-            if(e.currentTarget) {
-                let id = e.currentTarget.getAttribute("data-id");
-                console.log(id);
-                repliesMorePoints(dataArray, id)
-                
-            }
-        }
-        )
-    });
-
-    minusBtns.forEach((btn) => {
-        btn.addEventListener("click", e => {
-        let id = btn.getAttribute("data-id");
-            if(e) {
-                let id = e.currentTarget.getAttribute("data-id");
-                repliesMinusPoints(dataArray, id);
-                console.log(id);
-            }
-        }
-        )
-    });
-
-    deleteBtns.forEach((btn) => {
-        btn.addEventListener("click", e => {
-            if(e) {
-                let id = btn.getAttribute("data-id");
-                deleteReply(data, id);
-                console.log("hola");
-                console.log(id);
-            }
-        })
-    });
-
-    editBtns.forEach((btn) => {
-        btn.addEventListener("click", e => {
-            if(e) {
-                let id = btn.getAttribute("data-id");
-                editComment(data, id);                
-            }
-         })
-    });*/
 }
