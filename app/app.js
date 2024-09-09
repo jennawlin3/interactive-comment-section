@@ -468,7 +468,9 @@ function addPoints(dataArray, id) {
     const pointsSpan = document.querySelectorAll(".points");
     let pointSpan;    
     let number;
+
     if (likes.indexOf(id) !== -1) {
+        console.log(likes);
         return;
     }    
     if (dislikes.indexOf(id) !== -1) {
@@ -484,16 +486,13 @@ function addPoints(dataArray, id) {
         }
     })
 
-    if(number === 0) {
-        return
-    }
     number++;
     pointSpan.textContent = number;
+    likes.push(id);
     
     comments.forEach((c, i) => {
         if(c.id === Number(id)) {
             pointSpan.textContent = number;
-            likes.push(id);
             return;           
         }
     })
@@ -555,20 +554,19 @@ function repliesMorePoints(dataArray, id) {
         if(p.getAttribute("data-id") === id) {
             pointSpan = p;
             number = Number(pointSpan.textContent);
-            console.log(p);
         }
     });
 
     number++;
     pointSpan.textContent = number;
+    likes.push(id);
 
     comments.forEach((c, i) => {
         if(c.replies) {
             c.replies.forEach((r,i) => {
                 if(r.id === Number(id)) {
                     r.score = number;
-                    console.log(r);
-                    likes.push(id);
+                    //console.log(r);
                     return;
                 }
             });
@@ -773,6 +771,7 @@ function sendComment(dataArray, commentText, data) {
     if(commentText === undefined) {
         return;
     }
+    
 
     let currentUser = dataArray[0][1];
     
@@ -782,7 +781,10 @@ function sendComment(dataArray, commentText, data) {
     let text = commentText;
     let commentDivCont = commentContainer.getAttribute("data-id");
 
-    // Create new comment
+    // Create new comment    
+    const commentCont = document.createElement("div");
+    commentCont.classList.add("comment-cont");
+    commentCont.setAttribute("data-id", commentDivCont);
     const comment = document.createElement("article");
     comment.classList.add("comment");
     comment.setAttribute("id", commentDivCont);
@@ -884,7 +886,8 @@ function sendComment(dataArray, commentText, data) {
     commentOptions.appendChild(commentPoints);
     commentOptions.appendChild(yourOptions);
     comment.appendChild(commentOptions);
-    commentSection.appendChild(comment);
+    commentCont.appendChild(comment);
+    commentSection.appendChild(commentCont);
 
 
     const objJSON = {
@@ -892,6 +895,7 @@ function sendComment(dataArray, commentText, data) {
         createdAt: timestamp.textContent,
         id: commentDivCont,
         score: 0,
+        replies: [],
         user: {
             image: {
             webp: currentUser.image.webp,
@@ -901,13 +905,15 @@ function sendComment(dataArray, commentText, data) {
         }
     }
 
-    console.log(dataArray[1][1]);
+    console.log(objJSON);
+    dataArray[1][1].push(objJSON)
     const textareaComment = document.querySelector(".new-comment");
     textareaComment.value = "";
     console.log(textareaComment);
     //dataArray[1][1][Number(commentDivCont-1)].replies.push(objJSON);
     console.log(dataArray);
 
+    loadFunctionality(dataArray, data);
     
 }
 
@@ -997,12 +1003,12 @@ function sendReply(length, idCount, textTextarea, user, usernamePic, userReply, 
     const points = document.createElement("span");
     points.classList.add("points");
     points.textContent = 0;
-    points.setAttribute("data-id", count);
+    points.setAttribute("data-id", idCount);
         
     //Minus Btn
     const minusBtn = document.createElement("button");
     minusBtn.classList.add("minus-btn");
-    minusBtn.setAttribute("data-id", count);
+    minusBtn.setAttribute("data-id", idCount);
     const minusIcon = document.createElement("i");
     minusIcon.classList.add("fa-solid");
     minusIcon.classList.add("fa-minus");
