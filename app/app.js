@@ -8,6 +8,7 @@ let comment = [];
 let likes = [];
 let dislikes = [];
 let jsonArray = [];
+let newComment = false;
 
 document.addEventListener("DOMContentLoaded", loadComments());
 
@@ -330,9 +331,10 @@ async function loadComments() {
             }
         });
         const newComment = document.querySelector(".new-comment_container");
-        console.log(newComment);
+        const sendComment = document.querySelector(".new-comment_container .user-options .send-btn");
         count++;
         newComment.setAttribute("data-id", count);
+        sendComment.setAttribute("data-id", count);
         count++;
 
         jsonArray = dataArray;
@@ -342,14 +344,14 @@ async function loadComments() {
 
 function loadFunctionality(dataArray, data) {
     const replyBtns = document.querySelectorAll(".reply-btn");
-    const deleteBtns = document.querySelectorAll(".delete-btn");
     const editBtns = document.querySelectorAll(".edit-btn");
-    const sendBtn = document.querySelectorAll(".send-btn");
     const newCommentContainer = document.querySelector(".new-comment_container");
 
     //Comments
     const moreBtns = document.querySelectorAll(".comment .comment-options .comment-points .more-btn");
     const minusBtns = document.querySelectorAll(".comment .comment-options .comment-points .minus-btn");
+    const deleteBtns = document.querySelectorAll(".delete-btn");
+    const sendBtn = document.querySelectorAll(".send-btn");
     //Replies
     const moreReplyBtns = document.querySelectorAll(".reply .comment-options .comment-points .more-btn");
     const minusReplyBtns = document.querySelectorAll(".reply .comment-options .comment-points .minus-btn");
@@ -357,9 +359,7 @@ function loadFunctionality(dataArray, data) {
     const deleteReplyBtns = document.querySelectorAll(".reply .comment-options .your-options .delete-btn");
     let commentText;
 
-    console.log(moreReplyBtns);
 
-    console.log(minusReplyBtns);
 
     moreBtns.forEach((btn) => {
         btn.addEventListener("click", e => {
@@ -430,13 +430,10 @@ function loadFunctionality(dataArray, data) {
     deleteReplyBtns.forEach((btn) => {
         btn.addEventListener("click", e => {
             if(e) {;
-                let response = confirm("Are you sure that you want to delete this comment?");
-                if(response === true) {
                 let id = btn.getAttribute("data-id");
                 deleteReply(data, id);
-                //console.log("hola");                
-                }
-
+                console.log("hola");
+                console.log(id);                
             }
         })
     });
@@ -460,6 +457,25 @@ function loadFunctionality(dataArray, data) {
             sendComment(dataArray, commentText, data);
         })
     });
+    
+    if(newComment === true) {
+    const newCommentCont = document.querySelector(".new-comment_container");
+    const commentCont = document.querySelectorAll(".comment-cont");
+    const sendComment = document.querySelector(".new-comment_container .user-options .send-btn");
+    console.log("hola");
+
+    commentCont.forEach(c => {
+    if(newCommentCont.getAttribute("data-id") === c.getAttribute("data-id"));
+    newCommentCont.setAttribute("data-id", count);
+    sendComment.setAttribute("data-id", count);
+    count++;
+    return;
+    });
+    
+    newComment = false;
+    }
+
+
 }
 
 // ADD POINTS - COMMENTS
@@ -491,11 +507,15 @@ function addPoints(dataArray, id) {
     likes.push(id);
     
     comments.forEach((c, i) => {
+        console.log(comments);
         if(c.id === Number(id)) {
             pointSpan.textContent = number;
+            c.score = Number(number);
+            console.log(c);
             return;           
         }
     })
+    console.log(dataArray);
 }
 
 // REMOVE POINTS - COMMENTS
@@ -530,7 +550,9 @@ function removePoints(dataArray, id) {
 
     comments.forEach((c, i) => {
         if(c.id === Number(id)) {
-            pointSpan.textContent = number; 
+            pointSpan.textContent = number;
+            c.score = number;
+            console.log(c); 
             return;    
             }
     })
@@ -560,13 +582,15 @@ function repliesMorePoints(dataArray, id) {
     number++;
     pointSpan.textContent = number;
     likes.push(id);
+    console.log(dataArray)
 
     comments.forEach((c, i) => {
         if(c.replies) {
+            console.log(c.replies);
             c.replies.forEach((r,i) => {
                 if(r.id === Number(id)) {
                     r.score = number;
-                    //console.log(r);
+                    console.log(r);
                     return;
                 }
             });
@@ -696,9 +720,10 @@ function deleteComment(data, id) {
     let comments = data.comments;
     const commentsContainer = document.querySelector(".comments-container");
     const commentContainer = document.querySelectorAll(".comment-cont");
+    console.log(id);
 
     comments.forEach((d) => {
-        //console.log(d);
+        console.log(d);
         if(d.id === Number(id)) {
             //console.log(id);
             delete d.id;
@@ -771,15 +796,26 @@ function sendComment(dataArray, commentText, data) {
     if(commentText === undefined) {
         return;
     }
-    
 
     let currentUser = dataArray[0][1];
-    
+    let exists;
     const commentContainer = document.querySelector(".new-comment_container");
     const commentSection = document.querySelector(".comments-container");
+    const commentsContainer = document.querySelectorAll(".comment-cont");
 
     let text = commentText;
     let commentDivCont = commentContainer.getAttribute("data-id");
+
+    commentsContainer.forEach(cc => {
+        console.log(cc);
+        if(cc.getAttribute("data-id") === commentDivCont) {
+            exists = true;
+        }
+    })
+
+    if(exists === true) {
+        return;
+    }
 
     // Create new comment    
     const commentCont = document.createElement("div");
@@ -819,7 +855,7 @@ function sendComment(dataArray, commentText, data) {
         
     // Comment content
     const commentContentContainer = document.createElement("div");
-    commentContentContainer.classList.add("comment-content_container");
+    commentContentContainer.classList.add("comment-content");
     const commentContent = document.createElement("span");
     commentContent.classList.add("comment-content");
     commentContent.textContent = " " + text;
@@ -893,7 +929,7 @@ function sendComment(dataArray, commentText, data) {
     const objJSON = {
         content: text,
         createdAt: timestamp.textContent,
-        id: commentDivCont,
+        id: Number(commentDivCont),
         score: 0,
         replies: [],
         user: {
@@ -905,16 +941,12 @@ function sendComment(dataArray, commentText, data) {
         }
     }
 
-    console.log(objJSON);
     dataArray[1][1].push(objJSON)
     const textareaComment = document.querySelector(".new-comment");
     textareaComment.value = "";
-    console.log(textareaComment);
-    //dataArray[1][1][Number(commentDivCont-1)].replies.push(objJSON);
-    console.log(dataArray);
 
+    newComment = true;
     loadFunctionality(dataArray, data);
-    
 }
 
 // SEND REPLY
@@ -1020,7 +1052,7 @@ function sendReply(length, idCount, textTextarea, user, usernamePic, userReply, 
     //Delete Btn
     const deleteBtnUser = document.createElement("button");
     deleteBtnUser.classList.add("delete-btn");
-    deleteBtnUser.setAttribute("data-id", count);
+    deleteBtnUser.setAttribute("data-id", idCount);
     const deleteBtnUserIcon = document.createElement("i");
     deleteBtnUserIcon.classList.add("fa-solid");
     deleteBtnUserIcon.classList.add("fa-trash");
@@ -1028,7 +1060,7 @@ function sendReply(length, idCount, textTextarea, user, usernamePic, userReply, 
     //Edit Btn
     const editBtn = document.createElement("button");
     editBtn.classList.add("edit-btn");
-    editBtn.setAttribute("data-id", count);
+    editBtn.setAttribute("data-id", idCount);
     const editBtnIcon = document.createElement("i");
     editBtnIcon.classList.add("fa-solid");
     editBtnIcon.classList.add("fa-pen");
@@ -1054,7 +1086,7 @@ function sendReply(length, idCount, textTextarea, user, usernamePic, userReply, 
     const objJSON = {
         content: text,
         createdAt: timestamp.textContent,
-        id: count,
+        id: Number(idCount),
         replyingTo: userReply,
         score: 0,
         user: {
@@ -1070,3 +1102,4 @@ function sendReply(length, idCount, textTextarea, user, usernamePic, userReply, 
 
     loadFunctionality(dataArray, data);
 }
+
