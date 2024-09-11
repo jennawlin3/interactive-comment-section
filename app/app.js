@@ -9,6 +9,7 @@ let likes = [];
 let dislikes = [];
 let jsonArray = [];
 let newComment = false;
+let editReplyBool = false;
 
 document.addEventListener("DOMContentLoaded", loadComments());
 
@@ -19,8 +20,6 @@ async function loadComments() {
 
     function createApp(data) {
     let dataArray = Object.entries(data);
-
-    //console.log(dataArray);
 
     let currentUser = data.currentUser.username;
 
@@ -49,7 +48,7 @@ async function loadComments() {
     //CREATE COMMENTS
     let comments = dataArray[1][1];
     comments.forEach((c,i) => {
-        //console.log(c);
+
         // COMMENT DIV
         const commentCont = document.createElement("div");
         commentCont.classList.add("comment-cont");
@@ -58,6 +57,7 @@ async function loadComments() {
         const comment = document.createElement("article");
         comment.classList.add("comment");
         comment.setAttribute("id", c.id);
+
         // Comment information
         const commentInfo = document.createElement("div");
         commentInfo.classList.add("comment-info");
@@ -181,7 +181,7 @@ async function loadComments() {
         if(c.replies.length > 0) {
             let commentID = c.id;
             const commentDiv = document.querySelectorAll(".comment-cont");
-            //console.log(commentDiv);
+
             let commentWithReplies;
 
             commentDiv.forEach(div => {
@@ -189,15 +189,14 @@ async function loadComments() {
                     commentWithReplies = div;
                 }
             })
-             //console.log(commentWithReplies);
+
             c.replies.forEach(r => {
                 let countReply = r.id;
-
-                //console.log(commentWithReplies);
 
                 const comment = document.createElement("article");
                 comment.classList.add("reply");
                 comment.setAttribute("id", r.id);
+
                 // Comment information
                 const commentInfo = document.createElement("div");
                 commentInfo.classList.add("comment-info");
@@ -330,12 +329,6 @@ async function loadComments() {
              })
             }
         });
-        const newComment = document.querySelector(".new-comment_container");
-        const sendComment = document.querySelector(".new-comment_container .user-options .send-btn");
-        count++;
-        newComment.setAttribute("data-id", count);
-        sendComment.setAttribute("data-id", count);
-        count++;
 
         jsonArray = dataArray;
     loadFunctionality(dataArray, data);
@@ -344,22 +337,21 @@ async function loadComments() {
 
 function loadFunctionality(dataArray, data) {
     const replyBtns = document.querySelectorAll(".reply-btn");
-    const editBtns = document.querySelectorAll(".edit-btn");
     const newCommentContainer = document.querySelector(".new-comment_container");
 
     //Comments
     const moreBtns = document.querySelectorAll(".comment .comment-options .comment-points .more-btn");
     const minusBtns = document.querySelectorAll(".comment .comment-options .comment-points .minus-btn");
-    const deleteBtns = document.querySelectorAll(".delete-btn");
+    const deleteBtns = document.querySelectorAll(".comment .comment-options .your-options .delete-btn");
     const sendBtn = document.querySelectorAll(".send-btn");
+    const editBtns = document.querySelectorAll(".comment .comment-options .your-options .edit-btn");
+
     //Replies
     const moreReplyBtns = document.querySelectorAll(".reply .comment-options .comment-points .more-btn");
     const minusReplyBtns = document.querySelectorAll(".reply .comment-options .comment-points .minus-btn");
-    //Delete
     const deleteReplyBtns = document.querySelectorAll(".reply .comment-options .your-options .delete-btn");
+    const editReplyBtns = document.querySelectorAll(".reply .comment-options .your-options .edit-btn");
     let commentText;
-
-
 
     moreBtns.forEach((btn) => {
         btn.addEventListener("click", e => {
@@ -390,7 +382,7 @@ function loadFunctionality(dataArray, data) {
             if(e) {
                 let id = e.currentTarget.getAttribute("data-id");
                 removePoints(dataArray, id);
-                console.log(id);
+                //console.log(id);
             }
         }
         )
@@ -401,7 +393,7 @@ function loadFunctionality(dataArray, data) {
             if(e) {
                 let id = e.currentTarget.getAttribute("data-id");
                 repliesMinusPoints(dataArray, id);
-                console.log(id);
+                //console.log(id);
             }
         }
         )
@@ -421,8 +413,28 @@ function loadFunctionality(dataArray, data) {
         btn.addEventListener("click", e => {
             if(e) {
                 let id = btn.getAttribute("data-id");
-                deleteComment(data, id);
-                //console.log("hola");
+                const overlay = document.querySelector(".overlay");
+                const confirmModal = document.querySelector(".confirm-modal");
+                const confirm = document.querySelector(".confirm");
+                const cancel = document.querySelector(".cancel");
+
+                overlay.classList.remove("hide");
+                confirmModal.classList.remove("hide");
+
+                confirm.addEventListener("click", e => {
+                    if(e) {
+                        let response = true;
+                        deleteComment(data, id, response);
+                    }
+                });
+
+                cancel.addEventListener("click", e => {
+                    if(e) {
+                overlay.classList.add("hide");
+                confirmModal.classList.add("hide");
+                return;
+                    }
+                })
             }
         })
     });
@@ -431,51 +443,74 @@ function loadFunctionality(dataArray, data) {
         btn.addEventListener("click", e => {
             if(e) {;
                 let id = btn.getAttribute("data-id");
-                deleteReply(data, id);
-                console.log("hola");
-                console.log(id);                
+                const overlay = document.querySelector(".overlay");
+                const confirmModal = document.querySelector(".confirm-modal");
+                const confirm = document.querySelector(".confirm");
+                const cancel = document.querySelector(".cancel");
+
+                overlay.classList.remove("hide");
+                confirmModal.classList.remove("hide");
+
+                confirm.addEventListener("click", e => {
+                    if(e) {
+                        overlay.classList.add("hide");
+                        confirmModal.classList.add("hide");
+                        deleteReply(data, id);
+                    }
+                });
+
+                cancel.addEventListener("click", e => {
+                    if(e) {
+                overlay.classList.add("hide");
+                confirmModal.classList.add("hide");
+                return;
+                    }
+                })       
             }
         })
     });
+
+    editReplyBtns.forEach((btn) => {
+        btn.addEventListener("click", e => {
+            if(e) {
+                let id = btn.getAttribute("data-id");
+                editReply(data, id);
+                console.log("hola");        
+            }
+         });     
+    })
 
     editBtns.forEach((btn) => {
         btn.addEventListener("click", e => {
             if(e) {
                 let id = btn.getAttribute("data-id");
-                editComment(data, id);                
+                editComment(data, id);        
             }
          })
     });
 
+    newCommentContainer.addEventListener("click", e => {
+        if(e) {
+            newComment = false;
+        }
+    })
+
     newCommentContainer.addEventListener("keyup", e => {
             commentText = e.target.value;
-            console.log(commentText);
     })
 
     sendBtn.forEach((btn) => {
         btn.addEventListener("click", e => {
-            sendComment(dataArray, commentText, data);
+            if(e) {
+            const newComment = document.querySelector(".new-comment_container");
+            const sendCommentCont = document.querySelector(".new-comment_container .user-options .send-btn");
+            newComment.setAttribute("data-id", count);
+            sendCommentCont.setAttribute("data-id", count);
+            count++;
+            sendComment(dataArray, commentText, data);                
+            }
         })
     });
-    
-    if(newComment === true) {
-    const newCommentCont = document.querySelector(".new-comment_container");
-    const commentCont = document.querySelectorAll(".comment-cont");
-    const sendComment = document.querySelector(".new-comment_container .user-options .send-btn");
-    console.log("hola");
-
-    commentCont.forEach(c => {
-    if(newCommentCont.getAttribute("data-id") === c.getAttribute("data-id"));
-    newCommentCont.setAttribute("data-id", count);
-    sendComment.setAttribute("data-id", count);
-    count++;
-    return;
-    });
-    
-    newComment = false;
-    }
-
-
 }
 
 // ADD POINTS - COMMENTS
@@ -486,14 +521,14 @@ function addPoints(dataArray, id) {
     let number;
 
     if (likes.indexOf(id) !== -1) {
-        console.log(likes);
+        //console.log(likes);
         return;
     }    
     if (dislikes.indexOf(id) !== -1) {
         dislikes = dislikes.filter(item => item !== id)
     }
     
-    console.log(dislikes, likes);
+    //console.log(dislikes, likes);
     
     pointsSpan.forEach(p => {
         if(p.getAttribute("data-id") === id) {
@@ -507,15 +542,15 @@ function addPoints(dataArray, id) {
     likes.push(id);
     
     comments.forEach((c, i) => {
-        console.log(comments);
+        //console.log(comments);
         if(c.id === Number(id)) {
             pointSpan.textContent = number;
             c.score = Number(number);
-            console.log(c);
+            //console.log(c);
             return;           
         }
     })
-    console.log(dataArray);
+    //console.log(dataArray);
 }
 
 // REMOVE POINTS - COMMENTS
@@ -532,7 +567,7 @@ function removePoints(dataArray, id) {
         return;
     }
     
-    console.log(dislikes, likes);
+    //console.log(dislikes, likes);
 
     pointsSpan.forEach(p => {
         if(p.getAttribute("data-id") === id) {
@@ -552,7 +587,7 @@ function removePoints(dataArray, id) {
         if(c.id === Number(id)) {
             pointSpan.textContent = number;
             c.score = number;
-            console.log(c); 
+            //console.log(c); 
             return;    
             }
     })
@@ -560,7 +595,7 @@ function removePoints(dataArray, id) {
 
 // ADD MORE POINTS - REPLIES
 function repliesMorePoints(dataArray, id) {
-    console.log(id);
+    //console.log(id);
     let comments = dataArray[1][1];
     const pointsSpan = document.querySelectorAll(".points");    
     let pointSpan;
@@ -582,15 +617,15 @@ function repliesMorePoints(dataArray, id) {
     number++;
     pointSpan.textContent = number;
     likes.push(id);
-    console.log(dataArray)
+    //console.log(dataArray)
 
     comments.forEach((c, i) => {
         if(c.replies) {
-            console.log(c.replies);
+            //console.log(c.replies);
             c.replies.forEach((r,i) => {
                 if(r.id === Number(id)) {
                     r.score = number;
-                    console.log(r);
+                    //console.log(r);
                     return;
                 }
             });
@@ -616,7 +651,7 @@ function repliesMinusPoints(dataArray, id) {
         if(p.getAttribute("data-id") === id) {
             pointSpan = p;
             number = Number(pointSpan.textContent);
-            console.log(p, number);
+            // console.log(p, number);
         }
     })
 
@@ -635,7 +670,7 @@ function repliesMinusPoints(dataArray, id) {
                 if(r.id === Number(id)) {
                     pointSpan.textContent = number;
                     r.score = number;              
-                    console.log(r);
+                    //console.log(r);
                     return; 
                     //}
                 }
@@ -711,19 +746,22 @@ function addNewComment(data, id) {
             }
         })        
     })
-
-}  
+}
 
 // DELETE COMMENT
 function deleteComment(data, id) {
-    console.log("hola");
+    const overlay = document.querySelector(".overlay");
+    const confirmModal = document.querySelector(".confirm-modal");
+    overlay.classList.add("hide");
+    confirmModal.classList.add("hide");
+
     let comments = data.comments;
     const commentsContainer = document.querySelector(".comments-container");
     const commentContainer = document.querySelectorAll(".comment-cont");
-    console.log(id);
+    //console.log(id);
 
     comments.forEach((d) => {
-        console.log(d);
+        //console.log(d);
         if(d.id === Number(id)) {
             //console.log(id);
             delete d.id;
@@ -735,7 +773,7 @@ function deleteComment(data, id) {
             
             commentContainer.forEach(commentCont => {
                 if(commentCont.getAttribute("data-id") === id) {
-                console.log(commentCont);
+                //console.log(commentCont);
                 commentsContainer.removeChild(commentCont);
                 return;
                 }
@@ -762,7 +800,7 @@ function deleteReply(data, id) {
                 delete r.replies;
                 delete r.replyingTo;    
             
-            console.log(r);
+            //console.log(r);
             commentContainer.forEach(commentCont => {
                 if(commentCont.childNodes.length > 1) {
                     let replies = commentCont.childNodes;
@@ -786,10 +824,447 @@ function deleteReply(data, id) {
 
 // EDIT COMMENT
 function editComment(data, id) {
+    let commentsContainer = document.querySelector(".comments-container");
+    const commentContainer = document.querySelectorAll(".comment-cont");
+    const comments = document.querySelectorAll(".comment-cont article");
+    let comment;
+
+    let dataArray = Object.entries(data);
+
+    comments.forEach(c => {
+        //console.log(c);
+        if(c.getAttribute("id") === id) {
+            idComment = c.getAttribute("id");
+            comment = c;
+            c.classList.add("hide");
+            
+        }
+    })
+
+    let textComment = comment.childNodes[1].textContent;
+
+    const newCommentContainer = document.createElement("div");
+    newCommentContainer.classList.add("edit-comment_container");
+    newCommentContainer.setAttribute("data-id", id);
+    const textareaComment = document.createElement("textarea");
+    textareaComment.classList.add("edit-comment");
+    textareaComment.textContent = textComment;
+    const userOptions = document.createElement("div");
+    userOptions.classList.add("user-options");
+    const userAvatar = document.createElement("img");
+    userAvatar.setAttribute("src", data.currentUser.image.webp);
+    userAvatar.setAttribute("alt", data.currentUser.username);
+    userAvatar.classList.add("user-avatar");
+    const sendBtn = document.createElement("button");
+    sendBtn.classList.add("send-btn");
+    sendBtn.setAttribute("data-id", id);
+    sendBtn.textContent = "Send";
     
+    userOptions.appendChild(userAvatar);
+    userOptions.appendChild(sendBtn);
+    newCommentContainer.appendChild(textareaComment);
+    newCommentContainer.appendChild(userOptions);
+    commentsContainer.appendChild(newCommentContainer);      
+
+    const sendBtnEdit = document.querySelectorAll(".send-btn");
+    //console.log(sendBtnEdit);
+    const textareas = document.querySelectorAll(".edit-comment");
+    let textareaVal = textComment;
+    //console.log(textareaVal);
+    let username = data.currentUser.username;
+    let usernamePic = data.currentUser.image.webp;
+
+    textareas.forEach(t => {
+        t.addEventListener("keyup", e => {
+            textareaVal = e.target.value;
+            //console.log(textareaVal);
+        })
+    })
+
+    sendBtnEdit.forEach((btn) => {
+        if(btn.getAttribute("data-id") === String(id)) {
+        //console.log(btn);
+        btn.addEventListener("click", e => {  
+            if(e) {
+            //console.log(textareaVal);  
+            updateComment(id, textareaVal, dataArray, data);
+                }                        
+            })     
+        }
+    }) 
+}
+
+// UPDATE COMMENT 
+function updateComment(id, textareaVal, dataArray, data) {
+    if(textareaVal === undefined) {
+        return;
+    }
+
+    let currentUser = dataArray[0][1];
+    const commentSection = document.querySelector(".comments-container");
+    const elementsComment = document.querySelectorAll(".comments-container div");    
+    const commentJSON = dataArray[1][1];
+    let currentUserInfo;
+
+    elementsComment.forEach(c => {
+        //console.log(c);
+        if(c.getAttribute("data-id") === id) {
+            commentSection.removeChild(c);
+        }
+    });
+
+    commentJSON.forEach(cj => {
+        //console.log(cj);
+        if(cj.id === Number(id)) {
+            currentUserInfo = cj;
+            cj.content = textareaVal;
+        }
+    })
+
+    // Create new comment    
+    const commentCont = document.createElement("div");
+    commentCont.classList.add("comment-cont");
+    commentCont.setAttribute("data-id", id);
+    const comment = document.createElement("article");
+    comment.classList.add("comment");
+    comment.setAttribute("id", id);
+    
+    // Comment information
+    const commentInfo = document.createElement("div");
+    commentInfo.classList.add("comment-info");
+        
+    const userAvatar = document.createElement("img");
+    userAvatar.classList.add("user-avatar");
+    userAvatar.setAttribute("src", currentUser.image.webp);
+    userAvatar.setAttribute("alt", currentUser.username + " avatar");
+                
+    const username = document.createElement("a");
+    username.classList.add("Username");
+    username.textContent = currentUser.username;
+        
+    const timestamp = document.createElement("p");
+    timestamp.classList.add("timestamp");
+    timestamp.textContent = "now";
+
+        const yourUser = document.createElement("span");
+        yourUser.classList.add("your-username");
+        yourUser.textContent = "you";
+        commentInfo.appendChild(userAvatar);
+        commentInfo.appendChild(username);
+        commentInfo.appendChild(yourUser);
+        commentInfo.appendChild(timestamp);
+                
+    comment.appendChild(commentInfo);
+        
+    // Comment content
+    const commentContentContainer = document.createElement("div");
+    commentContentContainer.classList.add("comment-content");
+    const commentContent = document.createElement("span");
+    commentContent.classList.add("comment-content");
+    commentContent.textContent = " " + textareaVal;
+    commentContentContainer.appendChild(commentContent);
+    comment.appendChild (commentContentContainer);
+        
+    // Comments options 
+    const commentOptions = document.createElement("div");
+    commentOptions.classList.add("comment-options");
+    const commentPoints = document.createElement("div");
+    commentPoints.classList.add("comment-points");
+    //More Btn
+    const moreBtn = document.createElement("button");
+    moreBtn.classList.add("more-btn");
+    moreBtn.setAttribute("data-id", id);
+    const moreIcon = document.createElement("i");
+    moreIcon.classList.add("fa-solid");
+    moreIcon.classList.add("fa-plus");
+    moreBtn.appendChild(moreIcon);
+    // Points
+    const points = document.createElement("span");
+    points.classList.add("points");
+    points.textContent = currentUserInfo.score;
+    points.setAttribute("data-id", id);
+        
+    //Minus Btn
+    const minusBtn = document.createElement("button");
+    minusBtn.classList.add("minus-btn");
+    minusBtn.setAttribute("data-id", id);
+    const minusIcon = document.createElement("i");
+    minusIcon.classList.add("fa-solid");
+    minusIcon.classList.add("fa-minus");
+    minusBtn.appendChild(minusIcon);
+        
+    // Reply button Or User Options
+    const yourOptions = document.createElement("div");
+    yourOptions.classList.add("your-options");
+    //Delete Btn
+    const deleteBtnUser = document.createElement("button");
+    deleteBtnUser.classList.add("delete-btn");
+    deleteBtnUser.setAttribute("data-id", id);
+    const deleteBtnUserIcon = document.createElement("i");
+    deleteBtnUserIcon.classList.add("fa-solid");
+    deleteBtnUserIcon.classList.add("fa-trash");
+    deleteBtnUser.textContent = "Delete";
+    //Edit Btn
+    const editBtn = document.createElement("button");
+    editBtn.classList.add("edit-btn");
+    editBtn.setAttribute("data-id", id);
+    const editBtnIcon = document.createElement("i");
+    editBtnIcon.classList.add("fa-solid");
+    editBtnIcon.classList.add("fa-pen");
+    editBtn.textContent = "Edit";
+    editBtn.setAttribute("data-id", id);
+                    
+    deleteBtnUser.appendChild(deleteBtnUserIcon);
+    editBtn.appendChild(editBtnIcon);
+    yourOptions.appendChild(deleteBtnUser);
+    yourOptions.appendChild(editBtn);
+
+    commentPoints.appendChild(moreBtn);
+    commentPoints.appendChild(points);
+    commentPoints.appendChild(minusBtn);
+    commentOptions.appendChild(commentPoints);
+    commentOptions.appendChild(yourOptions);
+    comment.appendChild(commentOptions);
+    commentCont.appendChild(comment);
+    commentSection.appendChild(commentCont);
+
+    console.log(dataArray);
+
+    loadFunctionality(dataArray, data);
+    return;
 }
 
 // EDIT REPLY
+function editReply(data, id) {
+    if(editReplyBool === true) {
+        return;
+    }
+
+    let commentsContainer = document.querySelector(".comments-container");
+    const commentContainer = document.querySelectorAll(".comment-cont");
+    const comments = document.querySelectorAll(".comment-cont article");
+    let reply;
+
+    let dataArray = Object.entries(data);
+
+    commentContainer.forEach(c => {
+       //console.log(c.childNodes);
+       c.childNodes.forEach(cc => {
+        if(cc.getAttribute("id") === id) {
+            idComment = c.getAttribute("data-id");
+            idReply = cc.getAttribute("id");
+            reply = cc;
+            cc.classList.add("hide");
+        }     
+       })
+    })
+
+    let textComment = reply.childNodes[1].textContent;
+    console.log(textComment);
+
+    const newCommentContainer = document.createElement("article");
+    newCommentContainer.classList.add("edit-reply_container");
+    newCommentContainer.setAttribute("data-id", id);
+    const textareaComment = document.createElement("textarea");
+    textareaComment.classList.add("edit-comment");
+    textareaComment.textContent = textComment;
+    const userOptions = document.createElement("div");
+    userOptions.classList.add("user-options");
+    const userAvatar = document.createElement("img");
+    userAvatar.setAttribute("src", data.currentUser.image.webp);
+    userAvatar.setAttribute("alt", data.currentUser.username);
+    userAvatar.classList.add("user-avatar");
+    const sendBtn = document.createElement("button");
+    sendBtn.classList.add("send-btn");
+    sendBtn.setAttribute("data-id", id);
+    sendBtn.textContent = "Send";
+    
+    userOptions.appendChild(userAvatar);
+    userOptions.appendChild(sendBtn);
+    newCommentContainer.appendChild(textareaComment);
+    newCommentContainer.appendChild(userOptions);
+    commentContainer[idComment-1].appendChild(newCommentContainer);      
+
+    const sendBtnEdit = document.querySelectorAll(".send-btn");
+    //console.log(sendBtnEdit);
+    const textareas = document.querySelectorAll(".edit-comment");
+    let textareaVal = textComment;
+
+    textareas.forEach(t => {
+        t.addEventListener("keyup", e => {
+            textareaVal = e.target.value;
+            console.log(textareaVal);
+        })
+    })
+
+    sendBtnEdit.forEach((btn) => {
+        if(btn.getAttribute("data-id") === String(id)) {
+        btn.addEventListener("click", e => {  
+            if(e) {
+            let idReply = btn.getAttribute("data-id");  
+            updateReply(idReply, idComment, textareaVal, dataArray, data);
+            editReplyBool = false;
+                }                        
+            })     
+        }
+    }) 
+    editReplyBool = true;
+}
+
+// UPDATE REPLY
+function updateReply(idReply, idComment, textareaVal, dataArray, data) {
+    if(textareaVal === undefined) {
+        return;
+    }
+
+    let currentUser = dataArray[0][1];
+    const commentSection = document.querySelectorAll(".comment-cont");
+    const elementsComment = document.querySelectorAll(".comment-cont article");    
+    const commentJSON = dataArray[1][1];
+    let currentUserInfo;
+
+    
+    elementsComment.forEach(c => {
+        console.log(c);
+        if(c.getAttribute("data-id") === idReply || c.getAttribute("id") === idReply) {
+            commentSection[idComment-1].removeChild(c);
+        }
+    });
+
+    commentJSON.forEach(cj => {
+        console.log(cj);
+        if(cj.replies.length > 0) {
+            cj.replies.forEach(r => {      
+                if(r.id === Number(idReply)) {
+                currentUserInfo = r;
+                r.content = textareaVal;
+        }
+            })
+        }
+
+    })
+
+    let text = textareaVal.split(" ");
+    let userReply = text.filter(word => word.includes("@")).join();
+    let userReplyLenght = userReply.length;
+    textareaVal = textareaVal.substring(userReplyLenght, textareaVal.length+1);
+
+    // Create new comment    
+    const commentCont = document.createElement("div");
+    commentCont.classList.add("comment-cont");
+    commentCont.setAttribute("data-id", idReply);
+    const comment = document.createElement("article");
+    comment.classList.add("reply");
+    comment.setAttribute("id", idReply);
+    
+    // Comment information
+    const commentInfo = document.createElement("div");
+    commentInfo.classList.add("comment-info");
+        
+    const userAvatar = document.createElement("img");
+    userAvatar.classList.add("user-avatar");
+    userAvatar.setAttribute("src", currentUser.image.webp);
+    userAvatar.setAttribute("alt", currentUser.username + " avatar");
+                
+    const username = document.createElement("a");
+    username.classList.add("Username");
+    username.textContent = currentUser.username;
+        
+    const timestamp = document.createElement("p");
+    timestamp.classList.add("timestamp");
+    timestamp.textContent = "now";
+
+        const yourUser = document.createElement("span");
+        yourUser.classList.add("your-username");
+        yourUser.textContent = "you";
+        commentInfo.appendChild(userAvatar);
+        commentInfo.appendChild(username);
+        commentInfo.appendChild(yourUser);
+        commentInfo.appendChild(timestamp);
+                
+    comment.appendChild(commentInfo);
+        
+    // Comment content
+    const commentContentContainer = document.createElement("div");
+    commentContentContainer.classList.add("comment-content_container");
+    const userReplyTo = document.createElement("a");
+    userReplyTo.setAttribute("href", "#")
+    userReplyTo.classList.add("user-reply_to");
+    userReplyTo.textContent = userReply;
+    const commentContent = document.createElement("span");
+    commentContent.classList.add("comment-content");
+    commentContent.textContent = " " + textareaVal;
+    commentContentContainer.appendChild(userReplyTo);
+    commentContentContainer.appendChild(commentContent);
+    comment.appendChild (commentContentContainer);
+        
+    // Comments options 
+    const commentOptions = document.createElement("div");
+    commentOptions.classList.add("comment-options");
+    const commentPoints = document.createElement("div");
+    commentPoints.classList.add("comment-points");
+    //More Btn
+    const moreBtn = document.createElement("button");
+    moreBtn.classList.add("more-btn");
+    moreBtn.setAttribute("data-id", idReply);
+    const moreIcon = document.createElement("i");
+    moreIcon.classList.add("fa-solid");
+    moreIcon.classList.add("fa-plus");
+    moreBtn.appendChild(moreIcon);
+    // Points
+    const points = document.createElement("span");
+    points.classList.add("points");
+    points.textContent = currentUserInfo.score;
+    points.setAttribute("data-id", idReply);
+        
+    //Minus Btn
+    const minusBtn = document.createElement("button");
+    minusBtn.classList.add("minus-btn");
+    minusBtn.setAttribute("data-id", idReply);
+    const minusIcon = document.createElement("i");
+    minusIcon.classList.add("fa-solid");
+    minusIcon.classList.add("fa-minus");
+    minusBtn.appendChild(minusIcon);
+        
+    // Reply button Or User Options
+    const yourOptions = document.createElement("div");
+    yourOptions.classList.add("your-options");
+    //Delete Btn
+    const deleteBtnUser = document.createElement("button");
+    deleteBtnUser.classList.add("delete-btn");
+    deleteBtnUser.setAttribute("data-id", idReply);
+    const deleteBtnUserIcon = document.createElement("i");
+    deleteBtnUserIcon.classList.add("fa-solid");
+    deleteBtnUserIcon.classList.add("fa-trash");
+    deleteBtnUser.textContent = "Delete";
+    //Edit Btn
+    const editBtn = document.createElement("button");
+    editBtn.classList.add("edit-btn");
+    editBtn.setAttribute("data-id", idReply);
+    const editBtnIcon = document.createElement("i");
+    editBtnIcon.classList.add("fa-solid");
+    editBtnIcon.classList.add("fa-pen");
+    editBtn.textContent = "Edit";
+    editBtn.setAttribute("data-id", idReply);
+                    
+    deleteBtnUser.appendChild(deleteBtnUserIcon);
+    editBtn.appendChild(editBtnIcon);
+    yourOptions.appendChild(deleteBtnUser);
+    yourOptions.appendChild(editBtn);
+
+    commentPoints.appendChild(moreBtn);
+    commentPoints.appendChild(points);
+    commentPoints.appendChild(minusBtn);
+    commentOptions.appendChild(commentPoints);
+    commentOptions.appendChild(yourOptions);
+    comment.appendChild(commentOptions);
+    commentSection[idComment-1].appendChild(comment);
+
+    console.log(dataArray);
+
+    loadFunctionality(dataArray, data);
+    return;
+}
 
 // SEND COMMENT
 function sendComment(dataArray, commentText, data) {
@@ -798,7 +1273,6 @@ function sendComment(dataArray, commentText, data) {
     }
 
     let currentUser = dataArray[0][1];
-    let exists;
     const commentContainer = document.querySelector(".new-comment_container");
     const commentSection = document.querySelector(".comments-container");
     const commentsContainer = document.querySelectorAll(".comment-cont");
@@ -806,14 +1280,7 @@ function sendComment(dataArray, commentText, data) {
     let text = commentText;
     let commentDivCont = commentContainer.getAttribute("data-id");
 
-    commentsContainer.forEach(cc => {
-        console.log(cc);
-        if(cc.getAttribute("data-id") === commentDivCont) {
-            exists = true;
-        }
-    })
-
-    if(exists === true) {
+    if(newComment === true) {
         return;
     }
 
@@ -824,7 +1291,6 @@ function sendComment(dataArray, commentText, data) {
     const comment = document.createElement("article");
     comment.classList.add("comment");
     comment.setAttribute("id", commentDivCont);
-    count++;
     
     // Comment information
     const commentInfo = document.createElement("div");
@@ -941,12 +1407,14 @@ function sendComment(dataArray, commentText, data) {
         }
     }
 
-    dataArray[1][1].push(objJSON)
+    dataArray[1][1].push(objJSON);
+
     const textareaComment = document.querySelector(".new-comment");
     textareaComment.value = "";
 
-    newComment = true;
     loadFunctionality(dataArray, data);
+    newComment = true;
+    return;
 }
 
 // SEND REPLY

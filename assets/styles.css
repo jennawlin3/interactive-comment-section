@@ -115,7 +115,7 @@ body {
     border-radius: 10px;
 }
 
-.reply, .reply-comment_container {
+.reply, .reply-comment_container, .edit-reply_container {
     margin-left: 20px;
     position: relative;
 }
@@ -128,7 +128,7 @@ body {
     padding: 15px 0 0;
 }
 
-.reply::before, .reply-comment_container::before {
+.reply::before, .reply-comment_container::before, .edit-reply_container::before {
     content: "";
     position: absolute;
     width: 2px;
@@ -138,11 +138,11 @@ body {
     height: 110%;
 }
 
-.reply-comment_container::before {
+.reply-comment_container::before, .edit-reply_container::before {
     height: 115%;
 }
 
-.reply:last-of-type::before {
+.reply:last-of-type::before, .edit-reply_container::before {
     height: 100%;
 }
 
@@ -172,6 +172,7 @@ body {
     text-decoration: none;
     color: var(--moderate-blue);
     font-weight: 700;
+    cursor: pointer;
 }
 
 .comment-content, .comment-content_container {
@@ -262,10 +263,14 @@ button {
     display: flex;
 }
 
-.new-comment_container, .reply-comment_container {
+.new-comment_container, .reply-comment_container, .edit-comment_container, .edit-reply_container {
     background-color: var(--white);
     border-radius: 10px;
     padding: 15px;
+}
+
+.edit-comment_container, .edit-reply_container {
+    margin-bottom: 20px;
 }
 
 .new-comment_container {
@@ -278,7 +283,7 @@ button {
     margin-left: 20px;
 }
 
-.new-comment_container textarea, .reply-comment_container textarea {
+.new-comment_container textarea, .reply-comment_container textarea, .edit-comment_container textarea, .edit-reply_container textarea {
     border: 1px solid #ddd;
     width: 100%;
     border-radius: 10px;
@@ -370,16 +375,21 @@ button {
         height: 115%;
     }
     
-    .new-comment_container, .reply-comment_container {
+    .new-comment_container, .reply-comment_container, .edit-reply_container {
         position: relative;
     }
 
     .new-comment_container textarea, .reply-comment_container textarea {
-        width: 73%;
+        width: 71%;
         margin-left: 60px;
     }
 
-    .new-comment_container .user-avatar, .reply-comment_container .user-avatar {
+    .edit-reply_container textarea {
+        width: 70%;
+        margin-left: 60px;
+    }
+
+    .new-comment_container .user-avatar, .reply-comment_container .user-avatar, .edit-reply_container .user-avatar {
         position: absolute;
         top: 20px;
         left: 25px;
@@ -404,5 +414,15 @@ button {
 
     .send-btn {
         width: 100px;
+    }
+
+    .new-comment_container textarea, .reply-comment_container textarea {
+        width: 76%;
+        margin-left: 60px;
+    }
+
+    .edit-reply_container textarea {
+        width: 75%;
+        margin-left: 60px;
     }
 }
