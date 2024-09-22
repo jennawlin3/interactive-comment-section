@@ -715,7 +715,7 @@ function addNewComment(data, id) {
     const sendBtn = document.createElement("button");
     sendBtn.classList.add("send-btn");
     sendBtn.setAttribute("data-id", count);
-    sendBtn.textContent = "Send";
+    sendBtn.textContent = "Reply";
     
     userOptions.appendChild(userAvatar);
     userOptions.appendChild(sendBtn);
@@ -858,7 +858,7 @@ function editComment(data, id) {
     const sendBtn = document.createElement("button");
     sendBtn.classList.add("send-btn");
     sendBtn.setAttribute("data-id", id);
-    sendBtn.textContent = "Send";
+    sendBtn.textContent = "Update";
     
     userOptions.appendChild(userAvatar);
     userOptions.appendChild(sendBtn);
@@ -1077,7 +1077,7 @@ function editReply(data, id) {
     const sendBtn = document.createElement("button");
     sendBtn.classList.add("send-btn");
     sendBtn.setAttribute("data-id", id);
-    sendBtn.textContent = "Send";
+    sendBtn.textContent = "Update";
     
     userOptions.appendChild(userAvatar);
     userOptions.appendChild(sendBtn);
