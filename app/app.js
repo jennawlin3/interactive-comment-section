@@ -824,10 +824,17 @@ function deleteReply(data, id) {
 
 // EDIT COMMENT
 function editComment(data, id) {
+    if(commentsArray.indexOf(id) !== -1) {
+        console.log(commentsArray);
+        return;
+    }
+
     let commentsContainer = document.querySelector(".comments-container");
     const commentContainer = document.querySelectorAll(".comment-cont");
     const comments = document.querySelectorAll(".comment-cont article");
     let comment;
+
+    commentsArray.push(id);
 
     let dataArray = Object.entries(data);
 
@@ -856,7 +863,7 @@ function editComment(data, id) {
     userAvatar.setAttribute("alt", data.currentUser.username);
     userAvatar.classList.add("user-avatar");
     const sendBtn = document.createElement("button");
-    sendBtn.classList.add("send-btn");
+    sendBtn.classList.add("update-btn");
     sendBtn.setAttribute("data-id", id);
     sendBtn.textContent = "Update";
     
@@ -866,7 +873,7 @@ function editComment(data, id) {
     newCommentContainer.appendChild(userOptions);
     commentsContainer.appendChild(newCommentContainer);      
 
-    const sendBtnEdit = document.querySelectorAll(".send-btn");
+    const sendBtnEdit = document.querySelectorAll(".update-btn");
     //console.log(sendBtnEdit);
     const textareas = document.querySelectorAll(".edit-comment");
     let textareaVal = textComment;
@@ -1028,7 +1035,8 @@ function updateComment(id, textareaVal, dataArray, data) {
     commentCont.appendChild(comment);
     commentSection.appendChild(commentCont);
 
-    console.log(dataArray);
+    commentsArray = commentsArray.filter(item => item !== id);
+    console.log(commentsArray);
 
     loadFunctionality(dataArray, data);
     return;
@@ -1268,9 +1276,6 @@ function updateReply(idReply, idComment, textareaVal, dataArray, data) {
 
 // SEND COMMENT
 function sendComment(dataArray, commentText, data) {
-    if(commentText === undefined) {
-        return;
-    }
 
     let currentUser = dataArray[0][1];
     const commentContainer = document.querySelector(".new-comment_container");
@@ -1281,6 +1286,9 @@ function sendComment(dataArray, commentText, data) {
     let commentDivCont = commentContainer.getAttribute("data-id");
 
     if(newComment === true) {
+        return;
+    }
+    if(commentText === undefined) {
         return;
     }
 

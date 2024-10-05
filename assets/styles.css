@@ -302,7 +302,7 @@ button {
     align-items: center;
 }
 
-.send-btn {
+.send-btn, .update-btn {
     background-color: var(--moderate-blue);
     width: 80px;
     height: 40px;
@@ -312,7 +312,7 @@ button {
     font-weight: 400;
 }
 
-.send-btn:hover {
+.send-btn:hover, .update-btn:hover {
     opacity: .7;
 }
 
@@ -379,7 +379,7 @@ button {
         height: 115%;
     }
     
-    .new-comment_container, .reply-comment_container, .edit-reply_container {
+    .new-comment_container, .reply-comment_container, .edit-reply_container, .edit-comment_container {
         position: relative;
     }
 
@@ -399,11 +399,18 @@ button {
         left: 25px;
     }
 
-    .send-btn {
+    .send-btn, .update-btn {
         position: absolute;
-        top: 20px;
-        right: 20px;
         width: 15vw;
+        right: 20px;
+    }
+
+    .send-btn {
+        top: 20px;
+    }
+
+    .update-btn {
+        bottom: 15px;
     }
 }
 
@@ -416,7 +423,7 @@ button {
         width: 590px;
     }
 
-    .send-btn {
+    .send-btn, .update-btn {
         width: 100px;
     }
 
